@@ -20,16 +20,14 @@ echo   Voice Inventory - Android launcher
 echo ============================================
 echo.
 
-REM --- 1. Start backend if nothing is listening on :3000 ---
-netstat -ano | findstr ":3000" | findstr "LISTENING" >nul
-if errorlevel 1 (
-  echo [1/4] Backend not running - starting it in a new window...
-  start "Voice Inventory Backend" cmd /k "cd /d "%PROJ%" && npm start"
-  echo       Waiting a few seconds for it to come up...
-  timeout /t 6 /nobreak >nul
-) else (
-  echo [1/4] Backend already running on port 3000. OK.
+REM --- 1. (Re)start backend so the LATEST code is always served ---
+echo [1/4] Restarting backend with the latest code...
+for /f "tokens=5" %%p in ('netstat -ano ^| findstr ":3000" ^| findstr "LISTENING"') do (
+  taskkill /F /PID %%p >nul 2>&1
 )
+start "Voice Inventory Backend" cmd /k "cd /d "%PROJ%" && npm start"
+echo       Waiting a few seconds for it to come up...
+timeout /t 6 /nobreak >nul
 echo.
 
 REM --- 2. Wait for the phone to be detected ---
