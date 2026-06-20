@@ -985,7 +985,10 @@ app.get("/analytics", IsloggedIn, async (req, res) => {
 
 
 
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(3000);
-}
+// Listen on the port the host provides (Render sets process.env.PORT),
+// falling back to 3000 for local development / the Android USB bridge.
+// Must run in production too, otherwise the host sees "no open ports".
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
+
 module.exports = app;
