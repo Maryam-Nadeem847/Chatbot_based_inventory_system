@@ -578,14 +578,23 @@ startBtn.addEventListener("click", async () => {
 
             const data = await response.json();
 
-            const audio = new Audio(
-              "data:audio/mpeg;base64," + data.audio
-            );
+            if (data.audio) {
+                // ElevenLabs voice reply available — play it
+                const audio = new Audio(
+                  "data:audio/mpeg;base64," + data.audio
+                );
+                audio.play().catch(() => {});
 
-            audio.play();
-
-            // Mirror the same audio into a visible player so it can be replayed
-            audioPlayer.src = audio.src;
+                // Mirror the same audio into a visible player so it can be replayed
+                audioPlayer.src = audio.src;
+            } else if (data.message && "speechSynthesis" in window) {
+                // Fallback: speak the reply using the phone's built-in voice
+                // (used when ElevenLabs is unavailable, e.g. quota exhausted)
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(
+                  new SpeechSynthesisUtterance(data.message)
+                );
+            }
 
             renderResponse(data);
 

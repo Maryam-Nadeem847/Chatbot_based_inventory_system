@@ -327,15 +327,24 @@ app.post(
       const message =
         await handleIntent(intent, req.user?._id);
 
-      const audioBuffer =
-        await textToSpeech(message);
+      // Try to generate the voice reply, but don't fail the whole request if
+      // ElevenLabs is unavailable (e.g. 402 quota exhausted). The inventory
+      // action already ran and we still return the text reply; the frontend
+      // falls back to the device's built-in voice when audio is null.
+      let audio = null;
+      try {
+        const audioBuffer = await textToSpeech(message);
+        audio = audioBuffer.toString("base64");
+      } catch (ttsErr) {
+        console.error("TTS failed, continuing without ElevenLabs audio:", ttsErr.message);
+      }
 
       res.json({
         success: true,
         transcript,
         intent,
         message,
-        audio: audioBuffer.toString("base64")
+        audio
       });
 
     } catch(err) {
