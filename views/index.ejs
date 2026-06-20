@@ -1,321 +1,399 @@
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{font-family:var(--font-sans);background:var(--color-background-tertiary);color:var(--color-text-primary)}
-a{text-decoration:none;color:inherit}
-.teal{color:#0F6E56}
-.amber{color:#BA7517}
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DukaanBot — Awaaz se Inventory</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:system-ui,-apple-system,sans-serif;background:#fff;color:#111;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}
 
-nav{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;transition:box-shadow .2s ease}
-nav.scrolled{box-shadow:0 2px 10px rgba(0,0,0,.05)}
-.logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:500}
-.logo-icon{width:34px;height:34px;background:#0F6E56;border-radius:8px;display:flex;align-items:center;justify-content:center}
-.nav-links{display:flex;align-items:center;gap:1.5rem}
-.nav-links a:not(.btn-outline):not(.btn-primary){font-size:14px;color:var(--color-text-secondary);transition:color .15s ease}
-.nav-links a:not(.btn-outline):not(.btn-primary):hover{color:var(--color-text-primary)}
+    /* NAV */
+    nav{background:#fff;border-bottom:1px solid #eee;padding:0 1.25rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+    .logo{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:500}
+    .logo-icon{width:30px;height:30px;background:#0F6E56;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .hamburger{background:none;border:1px solid #ddd;border-radius:6px;padding:5px 8px;cursor:pointer;color:#111;display:none;align-items:center}
+    .nav-desktop{display:flex;align-items:center;gap:1rem}
+    .nav-desktop a{font-size:13px;color:#666}
+    .btn-p{background:#0F6E56;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer}
+    .btn-o{background:transparent;border:1px solid #ddd;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;color:#111}
 
-.btn-primary,.btn-outline,.btn-white,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:var(--font-sans);font-size:14px;border-radius:var(--border-radius-md);transition:background .15s ease,transform .15s ease,box-shadow .15s ease}
-.btn-primary{background:#0F6E56;color:#fff;border:none;padding:8px 20px;box-shadow:0 1px 2px rgba(15,110,86,.18)}
-.btn-primary:hover{background:#085041;transform:translateY(-1px);box-shadow:0 6px 14px rgba(15,110,86,.28)}
-.btn-outline{background:transparent;border:0.5px solid var(--color-border-secondary);padding:8px 20px;color:var(--color-text-primary)}
-.btn-outline:hover{background:var(--color-background-secondary)}
-.btn-primary:focus-visible,.btn-outline:focus-visible,.btn-white:focus-visible,.btn-ghost:focus-visible,.nav-links a:focus-visible,.footer-col a:focus-visible,.modal-switch a:focus-visible{outline:2px solid #0F6E56;outline-offset:2px;border-radius:4px}
+    /* MOBILE MENU */
+    .mob-menu{display:none;flex-direction:column;background:#fff;border-bottom:1px solid #eee;padding:0 1.25rem 1rem}
+    .mob-menu.open{display:flex}
+    .mob-menu a{font-size:14px;color:#555;padding:11px 0;border-bottom:1px solid #f0f0f0}
+    .mob-menu-btns{display:flex;gap:8px;padding-top:12px}
+    .mob-menu-btns .btn-p,.mob-menu-btns .btn-o{flex:1;padding:10px;font-size:14px;text-align:center;border-radius:8px}
 
-.hero{padding:5rem 2rem 4rem;text-align:center;max-width:800px;margin:0 auto;position:relative}
-.hero::before{content:"";position:absolute;top:-90px;left:50%;transform:translateX(-50%);width:520px;height:520px;background:radial-gradient(circle,rgba(15,110,86,.12) 0%,rgba(186,117,23,.07) 45%,transparent 70%);filter:blur(40px);pointer-events:none}
-.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#E1F5EE;color:#0F6E56;font-size:12px;padding:4px 12px;border-radius:20px;margin-bottom:1.5rem;position:relative}
-.badge-dot{animation:pulseDot 1.8s ease-in-out infinite}
-.hero h1{font-size:48px;font-weight:500;line-height:1.15;margin-bottom:1rem;letter-spacing:-0.5px;position:relative}
-.hero h1 span{color:#0F6E56}
-.hero p{font-size:17px;color:var(--color-text-secondary);line-height:1.7;max-width:560px;margin:0 auto 2rem;position:relative}
-.hero-btns{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;position:relative}
-.btn-large{padding:12px 28px;font-size:15px;border-radius:var(--border-radius-md)}
+    /* HERO — full viewport height */
+    .hero{min-height:calc(100vh - 56px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem 1.25rem 2rem;background:#fff}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:#E1F5EE;color:#085041;font-size:12px;padding:5px 14px;border-radius:20px;margin-bottom:1.5rem}
+    .dot{width:6px;height:6px;border-radius:50%;background:#0F6E56;display:inline-block;animation:pulse 1.8s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+    .hero h1{font-size:40px;font-weight:600;line-height:1.15;letter-spacing:-0.5px;margin-bottom:1rem}
+    .hero h1 span{color:#0F6E56}
+    .hero p{font-size:16px;color:#555;line-height:1.75;max-width:460px;margin:0 auto 2rem}
+    .hero-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:2.5rem}
+    .btn-hero-p{background:#0F6E56;color:#fff;border:none;padding:14px 28px;border-radius:10px;font-size:15px;cursor:pointer;font-weight:500}
+    .btn-hero-o{background:transparent;border:1px solid #ddd;padding:14px 24px;border-radius:10px;font-size:15px;cursor:pointer;color:#111}
 
-.mic-demo{margin:3rem auto;max-width:420px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.5rem;position:relative;box-shadow:0 8px 28px rgba(15,110,86,.08)}
-.mic-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:1rem;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px}
-.rec-dot{width:6px;height:6px;border-radius:50%;background:#0F6E56;animation:pulseDot 1.6s ease-in-out infinite}
-@keyframes pulseDot{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-.waveform{display:flex;align-items:center;justify-content:center;gap:4px;height:48px;margin-bottom:1rem}
-.waveform .bar{width:4px;background:#0F6E56;border-radius:2px;animation:wave 1.2s ease-in-out infinite}
-.waveform .bar:nth-child(1){animation-delay:0s}
-.waveform .bar:nth-child(2){animation-delay:.1s}
-.waveform .bar:nth-child(3){animation-delay:.2s}
-.waveform .bar:nth-child(4){animation-delay:.3s}
-.waveform .bar:nth-child(5){animation-delay:.4s}
-.waveform .bar:nth-child(6){animation-delay:.5s}
-.waveform .bar:nth-child(7){animation-delay:.4s}
-.waveform .bar:nth-child(8){animation-delay:.3s}
-.waveform .bar:nth-child(9){animation-delay:.2s}
-.waveform .bar:nth-child(10){animation-delay:.1s}
-.waveform .bar:nth-child(11){animation-delay:0s}
-@keyframes wave{0%,100%{height:8px}50%{height:36px}}
-.voice-text{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;font-size:13px;color:var(--color-text-secondary);text-align:center;transition:opacity .2s ease}
-.voice-response{margin-top:8px;background:#E1F5EE;border-radius:var(--border-radius-md);padding:10px 14px;font-size:13px;color:#085041;text-align:center;transition:opacity .2s ease}
+    /* MIC CARD */
+    .mic-card{width:100%;max-width:360px;background:#f8f8f8;border:1px solid #eee;border-radius:16px;padding:1.25rem}
+    .mic-label{font-size:12px;color:#888;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:.75rem}
+    .rdot{width:6px;height:6px;border-radius:50%;background:#0F6E56;display:inline-block;animation:pulse 1.6s ease-in-out infinite}
+    .wave{display:flex;align-items:center;justify-content:center;gap:3px;height:40px;margin-bottom:.75rem}
+    .wave .b{width:4px;background:#0F6E56;border-radius:2px;animation:wv 1.2s ease-in-out infinite}
+    .wave .b:nth-child(1){animation-delay:0s}.wave .b:nth-child(2){animation-delay:.1s}.wave .b:nth-child(3){animation-delay:.2s}.wave .b:nth-child(4){animation-delay:.3s}.wave .b:nth-child(5){animation-delay:.4s}.wave .b:nth-child(6){animation-delay:.5s}.wave .b:nth-child(7){animation-delay:.4s}.wave .b:nth-child(8){animation-delay:.3s}.wave .b:nth-child(9){animation-delay:.2s}.wave .b:nth-child(10){animation-delay:.1s}.wave .b:nth-child(11){animation-delay:0s}
+    @keyframes wv{0%,100%{height:6px}50%{height:32px}}
+    .voice-cmd{background:#fff;border-radius:8px;padding:9px 12px;font-size:13px;color:#666;text-align:center;border:1px solid #eee}
+    .voice-rep{margin-top:6px;background:#E1F5EE;border-radius:8px;padding:9px 12px;font-size:13px;color:#085041;text-align:center}
+    .scroll-hint{margin-top:2rem;display:flex;flex-direction:column;align-items:center;gap:4px;color:#aaa;font-size:12px;animation:bob 2s ease-in-out infinite}
+    @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
 
-.section{padding:4rem 2rem;max-width:1000px;margin:0 auto}
-.section-label{font-size:12px;color:#0F6E56;font-weight:500;text-transform:uppercase;letter-spacing:1px;margin-bottom:.75rem}
-.section h2{font-size:30px;font-weight:500;margin-bottom:.75rem}
-.section .sub{font-size:15px;color:var(--color-text-secondary);line-height:1.7;max-width:520px;margin-bottom:2.5rem}
+    /* SECTIONS */
+    .section{padding:4rem 1.25rem;background:#fff}
+    .section.alt{background:#f8faf9}
+    .sec-label{font-size:11px;color:#0F6E56;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:.5rem}
+    .sec-h{font-size:28px;font-weight:600;margin-bottom:.65rem;line-height:1.2}
+    .sec-sub{font-size:14px;color:#666;line-height:1.7;margin-bottom:2rem}
+    .sec-inner{max-width:960px;margin:0 auto}
 
-.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-.feature-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem;transition:transform .18s ease,box-shadow .18s ease}
-.feature-card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(15,110,86,.10)}
-.feature-icon{width:38px;height:38px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;font-size:18px}
-.fi-teal{background:#E1F5EE;color:#0F6E56}
-.fi-amber{background:#FAEEDA;color:#BA7517}
-.fi-blue{background:#E6F1FB;color:#185FA5}
-.fi-coral{background:#FAECE7;color:#993C1D}
-.feature-card h3{font-size:15px;font-weight:500;margin-bottom:.4rem}
-.feature-card p{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+    /* LANG PILLS */
+    .lang-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:1rem}
+    .pill{background:#fff;border:1px solid #e0e0e0;border-radius:20px;padding:6px 14px;font-size:13px;color:#555}
 
-.how-it-works{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);border-bottom:0.5px solid var(--color-border-tertiary);padding:4rem 2rem}
-.how-inner{max-width:1000px;margin:0 auto}
-.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2rem;margin-top:2.5rem}
-.step{text-align:center}
-.step-num{width:44px;height:44px;border-radius:50%;background:#0F6E56;color:#fff;font-size:16px;font-weight:500;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;box-shadow:0 0 0 6px #E1F5EE}
-.step h3{font-size:15px;font-weight:500;margin-bottom:.4rem}
-.step p{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+    /* FEATURES */
+    .feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .feat-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:1rem}
+    .feat-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:.75rem;font-size:17px}
+    .fi-t{background:#E1F5EE;color:#0F6E56}
+    .fi-a{background:#FAEEDA;color:#854F0B}
+    .fi-b{background:#E6F1FB;color:#0C447C}
+    .fi-c{background:#FAECE7;color:#712B13}
+    .feat-card h3{font-size:13px;font-weight:600;margin-bottom:.3rem}
+    .feat-card p{font-size:12px;color:#666;line-height:1.55}
 
-.commands-section{padding:4rem 2rem;max-width:1000px;margin:0 auto}
-.commands-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:2rem}
-.cmd-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:12px;transition:transform .15s ease,box-shadow .15s ease}
-.cmd-card:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(15,110,86,.08)}
-.cmd-badge{font-size:11px;padding:3px 8px;border-radius:4px;font-weight:500;white-space:nowrap;flex-shrink:0;margin-top:1px}
-.cb-add{background:#E1F5EE;color:#085041}
-.cb-sale{background:#FAECE7;color:#993C1D}
-.cb-check{background:#E6F1FB;color:#0C447C}
-.cb-report{background:#FAEEDA;color:#854F0B}
-.cb-buy{background:#EAF3DE;color:#3B6D11}
-.cmd-text{font-size:13px;color:var(--color-text-secondary);line-height:1.5}
-.cmd-text strong{color:var(--color-text-primary);font-weight:500;display:block;margin-bottom:2px;font-size:14px}
+    /* STATS */
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:1.5rem}
+    .stat{background:#f8faf9;border-radius:10px;padding:.9rem;text-align:center}
+    .stat .n{font-size:26px;font-weight:600;color:#0F6E56}
+    .stat .l{font-size:11px;color:#888;margin-top:2px}
 
-.lang-strip{background:var(--color-background-secondary);border-top:0.5px solid var(--color-border-tertiary);border-bottom:0.5px solid var(--color-border-tertiary);padding:1rem 2rem;text-align:center}
-.lang-pills{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:.5rem}
-.pill{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:4px 14px;font-size:13px;color:var(--color-text-secondary);transition:border-color .15s ease,transform .15s ease}
-.pill:hover{border-color:#0F6E56;transform:translateY(-1px)}
+    /* STEPS */
+    .steps{display:flex;flex-direction:column;gap:1.5rem;margin-top:1.5rem}
+    .step-row{display:flex;align-items:flex-start;gap:1rem}
+    .step-num{width:42px;height:42px;min-width:42px;border-radius:50%;background:#0F6E56;color:#fff;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 5px #E1F5EE}
+    .step-txt h3{font-size:14px;font-weight:600;margin-bottom:.3rem}
+    .step-txt p{font-size:13px;color:#666;line-height:1.6}
 
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:3rem 0}
-.stat-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:1rem;text-align:center;transition:transform .15s ease}
-.stat-card:hover{transform:translateY(-2px)}
-.stat-card .num{font-size:28px;font-weight:500;color:#0F6E56}
-.stat-card .lbl{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+    /* COMMANDS */
+    .cmd-list{display:flex;flex-direction:column;gap:8px;margin-top:1.5rem}
+    .cmd{background:#fff;border:1px solid #eee;border-radius:10px;padding:.85rem 1rem;display:flex;align-items:flex-start;gap:10px}
+    .cbadge{font-size:11px;padding:3px 8px;border-radius:4px;font-weight:600;white-space:nowrap;flex-shrink:0;margin-top:1px}
+    .cb-add{background:#E1F5EE;color:#085041}
+    .cb-sale{background:#FAECE7;color:#712B13}
+    .cb-chk{background:#E6F1FB;color:#0C447C}
+    .cb-rep{background:#FAEEDA;color:#633806}
+    .cb-buy{background:#EAF3DE;color:#27500A}
+    .cmd-t{font-size:13px;color:#666;line-height:1.5}
+    .cmd-t strong{color:#111;font-weight:600;display:block;margin-bottom:2px;font-size:13px}
 
-.cta-section{background:#0F6E56;padding:4rem 2rem;text-align:center;position:relative;overflow:hidden}
-.cta-section::before{content:"";position:absolute;top:-70px;right:-60px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.06)}
-.cta-section::after{content:"";position:absolute;bottom:-90px;left:-50px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.05)}
-.cta-section h2{font-size:30px;font-weight:500;color:#fff;margin-bottom:.75rem;position:relative}
-.cta-section p{font-size:15px;color:#9FE1CB;margin-bottom:2rem;position:relative}
-.cta-section>div{position:relative}
-.btn-white{background:#fff;color:#0F6E56;border:none;padding:12px 28px;font-weight:500}
-.btn-white:hover{background:#E1F5EE;transform:translateY(-1px)}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;padding:12px 28px}
-.btn-ghost:hover{background:rgba(255,255,255,.08)}
+    /* CTA */
+    .cta-sec{background:#0F6E56;padding:4rem 1.25rem;text-align:center}
+    .cta-sec h2{font-size:28px;font-weight:600;color:#fff;margin-bottom:.65rem;line-height:1.2}
+    .cta-sec p{font-size:15px;color:#9FE1CB;margin-bottom:2rem}
+    .cta-btns{display:flex;flex-direction:column;gap:10px;align-items:stretch;max-width:360px;margin:0 auto}
+    .btn-w{background:#fff;color:#0F6E56;border:none;padding:14px 24px;border-radius:10px;font-size:15px;cursor:pointer;font-weight:600}
+    .btn-g{background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;padding:14px 24px;border-radius:10px;font-size:15px;cursor:pointer}
 
-footer{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);padding:3rem 2rem 2rem}
-.footer-inner{max-width:1000px;margin:0 auto}
-.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;margin-bottom:2.5rem}
-.footer-brand p{font-size:13px;color:var(--color-text-secondary);line-height:1.7;margin-top:.75rem;max-width:220px}
-.footer-col h4{font-size:13px;font-weight:500;margin-bottom:.75rem}
-.footer-col a{display:block;font-size:13px;color:var(--color-text-secondary);margin-bottom:.4rem;transition:color .15s ease}
-.footer-col a:hover{color:var(--color-text-primary)}
-.footer-bottom{border-top:0.5px solid var(--color-border-tertiary);padding-top:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
-.footer-bottom p{font-size:12px;color:var(--color-text-secondary)}
+    /* FOOTER */
+    footer{background:#fff;border-top:1px solid #eee;padding:2.5rem 1.25rem 1.5rem}
+    .foot-inner{max-width:960px;margin:0 auto}
+    .foot-brand p{font-size:13px;color:#666;line-height:1.7;margin-top:.6rem}
+    .foot-links{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-top:2rem}
+    .foot-col h4{font-size:13px;font-weight:600;margin-bottom:.65rem}
+    .foot-col a{display:block;font-size:13px;color:#666;margin-bottom:.4rem;cursor:pointer}
+    .foot-bottom{border-top:1px solid #eee;padding-top:1rem;margin-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+    .foot-bottom p,.foot-bottom a{font-size:12px;color:#999}
+    .foot-bottom-links{display:flex;gap:1rem}
 
-@media (prefers-reduced-motion: reduce){
-  .badge-dot,.rec-dot,.waveform .bar{animation:none}
-}
-</style>
+    /* DESKTOP OVERRIDES */
+    @media(min-width:640px){
+      .hamburger{display:none !important}
+      .nav-desktop{display:flex !important}
+      .hero h1{font-size:52px}
+      .hero p{font-size:17px}
+      .feat-grid{grid-template-columns:repeat(3,1fr)}
+      .stats{grid-template-columns:repeat(4,1fr)}
+      .steps{flex-direction:row;gap:2rem}
+      .step-row{flex-direction:column;align-items:center;text-align:center;flex:1}
+      .cmd-list{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+      .cta-btns{flex-direction:row;max-width:none;justify-content:center}
+      .cta-btns button,.cta-btns a{flex:0 0 auto}
+      .cta-sec h2{font-size:34px}
+    }
+
+    /* MOBILE OVERRIDES */
+    @media(max-width:639px){
+      .nav-desktop{display:none}
+      .hamburger{display:flex}
+      .hero h1{font-size:32px}
+      .hero-btns{flex-direction:column;align-items:stretch;width:100%;max-width:340px}
+      .hero-btns .btn-hero-p,.hero-btns .btn-hero-o{width:100%;text-align:center}
+      .mic-card{max-width:100%}
+    }
+
+    @media(max-width:380px){
+      .hero h1{font-size:27px}
+      .sec-h{font-size:23px}
+      .feat-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
 
 <nav>
   <div class="logo">
-    <div class="logo-icon"><i class="ti ti-microphone" style="color:#fff;font-size:16px" aria-hidden="true"></i></div>
+    <div class="logo-icon">
+      <i class="ti ti-microphone" style="color:#fff;font-size:14px"></i>
+    </div>
     DukaanBot
   </div>
-  <div class="nav-links">
+  <div class="nav-desktop">
     <a href="#features">Features</a>
-    <a  href="/admin_panel">ADMIN SPACE</a>
     <a href="#how">Kaise kaam karta hai</a>
     <a href="#commands">Commands</a>
-    <a href="/login" class="btn-outline">Login</a>
-    <a href="/register" class="btn-primary">Free mein shuru karein</a>
+    <a href="/admin_panel">Admin</a>
+    <a href="/login"><button class="btn-o">Login</button></a>
+    <a href="/register"><button class="btn-p">Register</button></a>
   </div>
+  <button class="hamburger" onclick="document.getElementById('mm').classList.toggle('open')" aria-label="Menu">
+    <i class="ti ti-menu-2" style="font-size:20px"></i>
+  </button>
 </nav>
 
-<div class="hero">
-  <div class="hero-badge"><i class="ti ti-circle-filled badge-dot" style="font-size:8px;color:#0F6E56" aria-hidden="true"></i> Urdu, Roman Urdu aur English — teeno mein</div>
-  <h1>Apni dukaan ka hisaab<br><span>awaaz se rakho</span></h1>
+<div class="mob-menu" id="mm">
+  <a href="#features" onclick="document.getElementById('mm').classList.remove('open')">Features</a>
+  <a href="#how" onclick="document.getElementById('mm').classList.remove('open')">Kaise kaam karta hai</a>
+  <a href="#commands" onclick="document.getElementById('mm').classList.remove('open')">Commands</a>
+  <a href="/admin_panel" onclick="document.getElementById('mm').classList.remove('open')">Admin Space</a>
+  <div class="mob-menu-btns">
+    <a href="/login" class="btn-o">Login</a>
+    <a href="/register" class="btn-p">Free Register</a>
+  </div>
+</div>
+
+<!-- HERO: fills full screen -->
+<section class="hero">
+  <div class="badge">
+    <span class="dot"></span>
+    Urdu · Roman Urdu · English
+  </div>
+  <h1>Dukaan ka hisaab<br><span>awaaz se rakho</span></h1>
   <p>Bolein aur DukaanBot inventory update kare. Koi form nahi, koi typing nahi — sirf baat karein apne shop assistant se.</p>
   <div class="hero-btns">
-    <a href="/register" class="btn-primary btn-large">Abhi shuru karein — bilkul free</a>
-    <button class="btn-outline btn-large" onclick="sendPrompt('Show me a demo of DukaanBot voice commands')">Demo dekhein ↗</button>
+    <a href="/register"><button class="btn-hero-p">Abhi shuru karein — bilkul free</button></a>
+    <button class="btn-hero-o">Demo dekhein ↗</button>
   </div>
-
-  <div class="mic-demo">
-    <p class="mic-label"><i class="ti ti-microphone" aria-hidden="true"></i> Bolo kuch bhi... <span class="rec-dot" aria-hidden="true"></span></p>
-    <div class="waveform">
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  <div class="mic-card">
+    <p class="mic-label">
+      <i class="ti ti-microphone"></i>
+      Bolo kuch bhi...
+      <span class="rdot"></span>
+    </p>
+    <div class="wave">
+      <div class="b"></div><div class="b"></div><div class="b"></div><div class="b"></div>
+      <div class="b"></div><div class="b"></div><div class="b"></div><div class="b"></div>
+      <div class="b"></div><div class="b"></div><div class="b"></div>
     </div>
-    <div class="voice-text" id="voice-sample">"50 kg chawal add karo, cost 120 rupay kilo"</div>
-    <div class="voice-response" id="voice-reply">✓ "Rice" inventory mein add ho gaya — 50kg @ Rs.120/kg</div>
+    <div class="voice-cmd" id="vc">"50 kg chawal add karo, cost 120 rupay kilo"</div>
+    <div class="voice-rep" id="vr">✓ "Rice" inventory mein add ho gaya — 50kg @ Rs.120/kg</div>
   </div>
-</div>
-
-<div class="lang-strip">
-  <p style="font-size:13px;color:var(--color-text-secondary)">Yeh languages support karta hai</p>
-  <div class="lang-pills">
-    <span class="pill">🇵🇰 Urdu — اردو</span>
-    <span class="pill">Roman Urdu</span>
-    <span class="pill">English</span>
-    <span class="pill">Mix — "50 kg chawal add karo"</span>
+  <div class="scroll-hint">
+    <span>Scroll karein</span>
+    <i class="ti ti-chevron-down" style="font-size:20px"></i>
   </div>
-</div>
+</section>
 
-<div class="section" id="features">
-  <p class="section-label">Features</p>
-  <h2>Har cheez jo ek dukaan ko chahiye</h2>
-  <p class="sub">Voice se inventory manage karein, sales track karein, aur reports dekhein — sab kuch ek jagah.</p>
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon fi-teal"><i class="ti ti-microphone" aria-hidden="true"></i></div>
-      <h3>Voice control</h3>
-      <p>Urdu, Roman Urdu ya English mein bolein — AI samjhega aur record update karega.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon fi-amber"><i class="ti ti-package" aria-hidden="true"></i></div>
-      <h3>Live inventory</h3>
-      <p>Har product ka real-time stock dikhe. Kaunsa maal aaya, kaunsa bika, kaunsa bacha.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon fi-blue"><i class="ti ti-chart-bar" aria-hidden="true"></i></div>
-      <h3>Sales reports</h3>
-      <p>Aaj, is hafte, ya is maheene ki report — ek command mein poora hisaab.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon fi-coral"><i class="ti ti-alert-triangle" aria-hidden="true"></i></div>
-      <h3>Low stock alerts</h3>
-      <p>"Konsa maal khatam ho raha hai" — aur fauri list mil jaati hai.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon fi-teal"><i class="ti ti-history" aria-hidden="true"></i></div>
-      <h3>Ledger history</h3>
-      <p>Har transaction record rehta hai. Month start se ab tak ka poora hisaab ek jagah.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon fi-amber"><i class="ti ti-users" aria-hidden="true"></i></div>
-      <h3>Multi-user</h3>
-      <p>Dukaan ka malik aur kaamgar — alag accounts, ek inventory.</p>
+<!-- LANGUAGES -->
+<section class="section alt">
+  <div class="sec-inner">
+    <p class="sec-label">Languages</p>
+    <p class="sec-h" style="font-size:22px">Teeno mein bolein</p>
+    <div class="lang-wrap">
+      <span class="pill">🇵🇰 Urdu — اردو</span>
+      <span class="pill">Roman Urdu</span>
+      <span class="pill">English</span>
+      <span class="pill">Mix — "50 kg chawal add karo"</span>
     </div>
   </div>
+</section>
 
-  <div class="stats">
-    <div class="stat-card"><div class="num">8+</div><div class="lbl">Voice commands</div></div>
-    <div class="stat-card"><div class="num">3</div><div class="lbl">Languages supported</div></div>
-    <div class="stat-card"><div class="num">100%</div><div class="lbl">Ledger-style history</div></div>
-    <div class="stat-card"><div class="num">&lt;2s</div><div class="lbl">Response time</div></div>
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="sec-inner">
+    <p class="sec-label">Features</p>
+    <p class="sec-h">Har cheez jo ek dukaan ko chahiye</p>
+    <p class="sec-sub">Voice se inventory manage karein, sales track karein, reports dekhein — sab ek jagah.</p>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon fi-t"><i class="ti ti-microphone"></i></div>
+        <h3>Voice control</h3>
+        <p>Urdu, Roman Urdu ya English mein bolein — AI samjhega aur record update karega.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-a"><i class="ti ti-package"></i></div>
+        <h3>Live inventory</h3>
+        <p>Aaya, bika, bacha — har product ka real-time stock.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-b"><i class="ti ti-chart-bar"></i></div>
+        <h3>Sales reports</h3>
+        <p>Aaj, hafte, maheene ki full report — ek command mein.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-c"><i class="ti ti-alert-triangle"></i></div>
+        <h3>Low stock alerts</h3>
+        <p>Khatam hone wala maal fauri pata chalta hai.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-t"><i class="ti ti-history"></i></div>
+        <h3>Ledger history</h3>
+        <p>Har transaction hamesha record rehta hai.</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon fi-a"><i class="ti ti-users"></i></div>
+        <h3>Multi-user</h3>
+        <p>Malik aur kaamgar — alag accounts, ek inventory.</p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n">8+</div><div class="l">Voice commands</div></div>
+      <div class="stat"><div class="n">3</div><div class="l">Languages</div></div>
+      <div class="stat"><div class="n">100%</div><div class="l">Ledger history</div></div>
+      <div class="stat"><div class="n">&lt;2s</div><div class="l">Response time</div></div>
+    </div>
   </div>
-</div>
+</section>
 
-<div class="how-it-works" id="how">
-  <div class="how-inner">
-    <p class="section-label">Kaise kaam karta hai</p>
-    <h2>3 steps mein shuru</h2>
+<!-- HOW IT WORKS -->
+<section class="section alt" id="how">
+  <div class="sec-inner">
+    <p class="sec-label">Kaise kaam karta hai</p>
+    <p class="sec-h">3 steps mein shuru</p>
     <div class="steps">
-      <div class="step">
+      <div class="step-row">
         <div class="step-num">1</div>
-        <h3>Account banayein</h3>
-        <p>Phone number se register karein. 30 seconds lagenge.</p>
+        <div class="step-txt">
+          <h3>Account banayein</h3>
+          <p>Register karein — 30 seconds lagenge. Koi payment nahi.</p>
+        </div>
       </div>
-      <div class="step">
+      <div class="step-row">
         <div class="step-num">2</div>
-        <h3>Mic dabayein</h3>
-        <p>Apni dukaan ke products bolein — Urdu mein, Roman mein, ya English mein.</p>
+        <div class="step-txt">
+          <h3>Mic dabayein</h3>
+          <p>Products bolein — Urdu, Roman Urdu ya English mein.</p>
+        </div>
       </div>
-      <div class="step">
+      <div class="step-row">
         <div class="step-num">3</div>
-        <h3>Record ho jaata hai</h3>
-        <p>AI command samjhta hai, inventory update hoti hai, aur confirmation bolke sunata hai.</p>
+        <div class="step-txt">
+          <h3>Record ho jaata hai</h3>
+          <p>AI update karta hai, confirmation bolke sunata hai.</p>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="commands-section" id="commands">
-  <p class="section-label">Voice commands</p>
-  <h2>Jo bolein woh ho jaata hai</h2>
-  <p class="sub" style="margin-bottom:1.5rem">Yeh sab commands supported hain — Urdu, Roman Urdu ya English mein.</p>
-  <div class="commands-grid">
-    <div class="cmd-card"><span class="cmd-badge cb-add">Add</span><div class="cmd-text"><strong>"50 kg chawal add karo"</strong>Naya product stock mein daalo</div></div>
-    <div class="cmd-card"><span class="cmd-badge cb-sale">Sale</span><div class="cmd-text"><strong>"5 kg chawal bik gaya"</strong>Sale record karo, stock ghata do</div></div>
-    <div class="cmd-card"><span class="cmd-badge cb-check">Check</span><div class="cmd-text"><strong>"Doodh ka stock kitna hai"</strong>Kisi bhi product ka bacha hua stock</div></div>
-    <div class="cmd-card"><span class="cmd-badge cb-check">Stock</span><div class="cmd-text"><strong>"Sara stock dikhao"</strong>Poori inventory ek baar mein</div></div>
-    <div class="cmd-card"><span class="cmd-badge cb-report">Report</span><div class="cmd-text"><strong>"Is maheene ki report chahiye"</strong>Aaj / hafte / maheene ki sale summary</div></div>
-    <div class="cmd-card"><span class="cmd-badge cb-add">Update</span><div class="cmd-text"><strong>"Chawal ki price 150 kar do"</strong>Price ya status update karo</div></div>
-    <div class="cmd-card"><span class="cmd-badge cb-buy">Purchase</span><div class="cmd-text"><strong>"20 packet biscuit aur aaya"</strong>Restock — stock badha do</div></div>
-    <div class="cmd-card"><span class="cmd-badge cb-sale">Low stock</span><div class="cmd-text"><strong>"Konsa maal khatam ho raha hai"</strong>Low stock products ki list</div></div>
+<!-- COMMANDS -->
+<section class="section" id="commands">
+  <div class="sec-inner">
+    <p class="sec-label">Voice commands</p>
+    <p class="sec-h">Jo bolein woh ho jaata hai</p>
+    <p class="sec-sub">Urdu, Roman Urdu ya English — sab supported hain.</p>
+    <div class="cmd-list">
+      <div class="cmd"><span class="cbadge cb-add">Add</span><div class="cmd-t"><strong>"50 kg chawal add karo"</strong>Naya product stock mein daalo</div></div>
+      <div class="cmd"><span class="cbadge cb-sale">Sale</span><div class="cmd-t"><strong>"5 kg chawal bik gaya"</strong>Sale record karo, stock ghata do</div></div>
+      <div class="cmd"><span class="cbadge cb-chk">Check</span><div class="cmd-t"><strong>"Doodh ka stock kitna hai"</strong>Kisi bhi product ka bacha hua stock</div></div>
+      <div class="cmd"><span class="cbadge cb-chk">Stock</span><div class="cmd-t"><strong>"Sara stock dikhao"</strong>Poori inventory ek baar mein</div></div>
+      <div class="cmd"><span class="cbadge cb-rep">Report</span><div class="cmd-t"><strong>"Is maheene ki report chahiye"</strong>Aaj / hafte / maheene ki sale summary</div></div>
+      <div class="cmd"><span class="cbadge cb-add">Update</span><div class="cmd-t"><strong>"Chawal ki price 150 kar do"</strong>Price ya status update karo</div></div>
+      <div class="cmd"><span class="cbadge cb-buy">Purchase</span><div class="cmd-t"><strong>"20 packet biscuit aur aaya"</strong>Restock — stock badha do</div></div>
+      <div class="cmd"><span class="cbadge cb-sale">Low stock</span><div class="cmd-t"><strong>"Konsa maal khatam ho raha hai"</strong>Kum stock wale products ki list</div></div>
+    </div>
   </div>
-</div>
+</section>
 
-<div class="cta-section">
+<!-- CTA -->
+<section class="cta-sec">
   <h2>Apni dukaan ka hisaab shuru karein aaj</h2>
   <p>Free account banayein — koi credit card nahi, koi contract nahi.</p>
-  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-    <a href="/register" class="btn-white">Free mein register karein</a>
-    <button class="btn-ghost" onclick="sendPrompt('Tell me more about DukaanBot pricing and plans')">Pricing poochein ↗</button>
+  <div class="cta-btns">
+    <a href="/register"><button class="btn-w">Free mein register karein</button></a>
+    <button class="btn-g">Pricing poochein ↗</button>
   </div>
-</div>
+</section>
 
+<!-- FOOTER -->
 <footer>
-  <div class="footer-inner">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="logo"><div class="logo-icon"><i class="ti ti-microphone" style="color:#fff;font-size:16px" aria-hidden="true"></i></div>DukaanBot</div>
-        <p>Pakistan ke chote dukaan daaron ke liye voice-first inventory management.</p>
+  <div class="foot-inner">
+    <div class="foot-brand">
+      <div class="logo">
+        <div class="logo-icon"><i class="ti ti-microphone" style="color:#fff;font-size:14px"></i></div>
+        DukaanBot
       </div>
-      <div class="footer-col">
+      <p>Pakistan ke chote dukaan daaron ke liye voice-first inventory management.</p>
+    </div>
+    <div class="foot-links">
+      <div class="foot-col">
         <h4>Product</h4>
         <a href="#features">Features</a>
         <a href="#commands">Commands</a>
         <a href="#how">Kaise kaam karta hai</a>
       </div>
-      <div class="footer-col">
+      <div class="foot-col">
         <h4>Support</h4>
-        <a onclick="sendPrompt('How do I contact DukaanBot support?')">Help center</a>
-        <a onclick="sendPrompt('What are DukaanBot voice command examples?')">Command guide</a>
-        <a onclick="sendPrompt('Report a bug in DukaanBot')">Bug report</a>
+        <a href="#">Help center</a>
+        <a href="#">Command guide</a>
+        <a href="#">Bug report</a>
       </div>
-      <div class="footer-col">
+      <div class="foot-col">
         <h4>Account</h4>
         <a href="/login">Login</a>
         <a href="/register">Sign up</a>
-        <a onclick="sendPrompt('What is DukaanBot privacy policy?')">Privacy</a>
+        <a href="#">Privacy</a>
       </div>
     </div>
-    <div class="footer-bottom">
+    <div class="foot-bottom">
       <p>© 2025 DukaanBot. Pakistan mein banaya gaya.</p>
-      <div style="display:flex;gap:1rem">
-        <a href="#" style="font-size:12px;color:var(--color-text-secondary)">Terms</a>
-        <a href="#" style="font-size:12px;color:var(--color-text-secondary)">Privacy</a>
+      <div class="foot-bottom-links">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
       </div>
     </div>
   </div>
 </footer>
 
 <script>
-window.addEventListener('scroll', () => {
-  document.querySelector('nav').classList.toggle('scrolled', window.scrollY > 8);
-});
-
-const samples=[
-  {cmd:'"50 kg chawal add karo, cost 120 rupay kilo"',res:'✓ "Rice" inventory mein add ho gaya — 50kg @ Rs.120/kg'},
-  {cmd:'"aaj 5 kg doodh bika, 80 rupay litre"',res:'✓ 5 litre Milk sold record ho gaya. Bacha hua: 45 litre'},
-  {cmd:'"sugar ka stock kitna hai"',res:'✓ Sugar: Total aaya 100kg, bika 30kg, bacha 70kg'},
-  {cmd:'"is hafte ki report chahiye"',res:'✓ Week report: Rice Rs.750, Sugar Rs.2400, Milk Rs.480'},
-  {cmd:'"konsa maal khatam ho raha hai"',res:'⚠ Salt: 3kg, Biscuit: 5 packets — restock zaroor karein'}
-]
-let si=0
-setInterval(()=>{
-  si=(si+1)%samples.length
-  document.getElementById('voice-sample').textContent=samples[si].cmd
-  document.getElementById('voice-reply').textContent=samples[si].res
-},3000)
+  const samples = [
+    {c:'"50 kg chawal add karo, cost 120 rupay kilo"', r:'✓ "Rice" inventory mein add ho gaya — 50kg @ Rs.120/kg'},
+    {c:'"aaj 5 kg doodh bika, 80 rupay litre"',       r:'✓ 5 litre Milk sold. Bacha hua: 45 litre'},
+    {c:'"sugar ka stock kitna hai"',                   r:'✓ Sugar: aaya 100kg, bika 30kg, bacha 70kg'},
+    {c:'"is hafte ki report chahiye"',                 r:'✓ Week: Rice Rs.750, Sugar Rs.2400, Milk Rs.480'},
+    {c:'"konsa maal khatam ho raha hai"',              r:'⚠ Salt: 3kg, Biscuit: 5 packets — restock karein'}
+  ];
+  let i = 0;
+  setInterval(() => {
+    i = (i + 1) % samples.length;
+    document.getElementById('vc').textContent = samples[i].c;
+    document.getElementById('vr').textContent = samples[i].r;
+  }, 3000);
 </script>
+
+</body>
+</html>
