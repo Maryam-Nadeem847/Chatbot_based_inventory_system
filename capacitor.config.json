@@ -3,11 +3,7 @@
   "appName": "Voice Inventory",
   "webDir": "www",
   "server": {
-    "url": "http://localhost:3000",
-    "cleartext": true,
-    "androidScheme": "http"
-  },
-  "android": {
-    "allowMixedContent": true
+    "url": "https://chatbot-based-inventory-system.onrender.com",
+    "androidScheme": "https"
   }
 }
