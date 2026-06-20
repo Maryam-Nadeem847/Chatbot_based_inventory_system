@@ -32,7 +32,7 @@ const MongoStore = require("connect-mongo").default;
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    cb(null, "/tmp");
   },
   filename: (req, file, cb) => {
     cb(
@@ -307,6 +307,12 @@ app.post(
       const transcript =
         await transcribeAudio(req.file.path);
 
+
+
+        // / ✅ Delete temp file after transcription
+      fs.unlink(req.file.path, (err) => {
+        if (err) console.error("Failed to delete temp file:", err);
+      });
       const intent =
         await parseIntent(transcript);
 
