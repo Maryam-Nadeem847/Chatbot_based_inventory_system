@@ -740,7 +740,7 @@ app.post('/products', async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
-app.listen(3000,()=>{
-    console.log("server is running on port 3000");
-    console.log("Visit http://localhost:3000 to access the app");
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(3000);
+}
+module.exports = app;
