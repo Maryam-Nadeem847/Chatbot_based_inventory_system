@@ -4,6 +4,14 @@ const mongoose=require("mongoose");
 const express =require("express");
 // const ejsmate = require('ejs-mate')
 const app = express();
+
+// ── CORS ───────────────────────────────────────────────────────────────
+// Allows the Android WebView (and any cross-origin caller) to talk to this
+// backend with session cookies. Reflecting the request origin + credentials
+// is required because cookies cannot be sent with a wildcard "*" origin.
+const cors = require("cors");
+app.use(cors({ origin: true, credentials: true }));
+
 app.use(express.json());
 app.set("view engine", "ejs");
 const path = require("path");
@@ -676,6 +684,14 @@ app.post('/logout', (req, res, next) => {
 });
 
 // GET /api/auth/me
+// Used by the front-end (home1.ejs) to show "Signed in as <username>".
+// Returns 401 when not authenticated so the badge simply stays hidden.
+app.get("/api/user", (req, res) => {
+  if (req.isAuthenticated && req.isAuthenticated()) {
+    return res.json({ username: req.user.username, email: req.user.email });
+  }
+  res.status(401).json({ success: false, message: "Not authenticated." });
+});
 
 
 // ════════════════════════════════════════════════════════════════════════

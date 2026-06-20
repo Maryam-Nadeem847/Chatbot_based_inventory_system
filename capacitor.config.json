@@ -1,0 +1,13 @@
+{
+  "appId": "com.dukaanbot.inventory",
+  "appName": "Voice Inventory",
+  "webDir": "www",
+  "server": {
+    "url": "http://localhost:3000",
+    "cleartext": true,
+    "androidScheme": "http"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
+}
