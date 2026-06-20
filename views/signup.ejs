@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in — Voice Inventory Manager</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg-soft:#F3FAF5;
+    --paper:#FFFFFF;
+    --line:#D9EBE0;
+    --ink:#152620;
+    --ink-soft:#5E7368;
+    --green-900:#123A26;
+    --green-700:#1E7A4D;
+    --green-600:#268F5B;
+    --green-100:#DEF3E6;
+    --shadow: 0 1px 2px rgba(18,58,38,.06), 0 8px 24px rgba(18,58,38,.07);
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--bg-soft);
+    color:var(--ink);
+    font-family:'Inter', Arial, sans-serif;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  .login-card{
+    width:100%;
+    max-width:380px;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:36px 32px 30px;
+    text-align:center;
+  }
+
+  .recorder-dots{
+    display:flex;
+    gap:5px;
+    justify-content:center;
+    margin-bottom:18px;
+  }
+
+  .recorder-dots span{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#34A065;
+  }
+  .recorder-dots span:nth-child(2){ opacity:.6; }
+  .recorder-dots span:nth-child(3){ opacity:.3; }
+
+  .brand-mark{
+    width:44px;
+    height:44px;
+    margin:0 auto 16px;
+    border-radius:10px;
+    background:var(--green-700);
+    color:#fff;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    letter-spacing:.5px;
+  }
+
+  .eyebrow{
+    margin:0 0 6px;
+    font-size:12px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--green-600);
+    font-weight:600;
+  }
+
+  h1{
+    margin:0 0 8px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:22px;
+    font-weight:600;
+    color:var(--green-900);
+  }
+
+  .hint{
+    margin:0 auto 26px;
+    max-width:280px;
+    font-size:13px;
+    line-height:1.5;
+    color:var(--ink-soft);
+  }
+
+  form{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    text-align:left;
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  label{
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    color:var(--green-600);
+  }
+
+  input{
+    width:100%;
+    padding:12px 14px;
+    font-size:14px;
+    font-family:'Inter', sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:10px;
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+
+  input::placeholder{
+    color:#9FB3A8;
+  }
+
+  input:focus{
+    border-color:var(--green-600);
+    box-shadow:0 0 0 3px var(--green-100);
+  }
+
+  button{
+    margin-top:6px;
+    padding:13px;
+    font-size:15px;
+    font-weight:600;
+    font-family:'Inter', sans-serif;
+    color:#fff;
+    background:var(--green-700);
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    transition:background .15s ease, transform .15s ease;
+  }
+
+  button:hover{
+    background:var(--green-600);
+    transform:translateY(-1px);
+  }
+
+  button:focus-visible{
+    outline:2px solid var(--green-600);
+    outline-offset:3px;
+  }
+
+  footer{
+    margin-top:24px;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+
+  @media (max-width:380px){
+    .login-card{ padding:28px 22px 24px; }
+  }
+</style>
+</head>
+<body>
+
+  <div>
+    <div class="login-card">
+      <div class="recorder-dots"><span></span><span></span><span></span></div>
+      <div class="brand-mark">VI</div>
+
+      <p class="eyebrow">Voice Inventory Manager</p>
+      <h1>Sign up</h1>
+      <p class="hint">Create an account to access the inventory console.</p>
+
+      <form action="/register" method="POST">
+        <div class="field">
+          <label for="username">Username</label>
+          <input type="text" name="username" id="username" placeholder="Username" autocomplete="username" required>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" name="email" id="email" placeholder="Email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" name="password" id="password" placeholder="Password" autocomplete="current-password" required>
+        </div>
+
+        <button type="submit">Sign up</button>
+      </form>
+    </div>
+
+    <footer>Voice Inventory Manager</footer>
+  </div>
+
+</body>
+</html>

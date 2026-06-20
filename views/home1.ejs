@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voice Inventory Manager</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg-soft:#F3FAF5;
+    --paper:#FFFFFF;
+    --line:#D9EBE0;
+    --ink:#152620;
+    --ink-soft:#5E7368;
+    --green-900:#123A26;
+    --green-700:#1E7A4D;
+    --green-600:#268F5B;
+    --green-500:#34A065;
+    --green-100:#DEF3E6;
+    --amber:#9A6A12;
+    --error:#B5402A;
+    --shadow: 0 1px 2px rgba(18,58,38,.06), 0 8px 24px rgba(18,58,38,.07);
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--bg-soft);
+    color:var(--ink);
+    font-family:'Inter', Arial, sans-serif;
+    display:flex;
+    justify-content:center;
+  }
+
+  .page{
+    width:100%;
+    max-width:640px;
+    padding:28px 20px 60px;
+  }
+
+  /* ---------- Header ---------- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:36px;
+    flex-wrap:wrap;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .brand-mark{
+    width:40px;
+    height:40px;
+    border-radius:10px;
+    background:var(--green-700);
+    color:#fff;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    letter-spacing:.5px;
+  }
+
+  .brand-text{
+    display:flex;
+    flex-direction:column;
+    line-height:1.15;
+  }
+
+  .brand-text strong{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:17px;
+    font-weight:600;
+    color:var(--green-900);
+  }
+
+  .brand-text span{
+    font-size:12px;
+    color:var(--ink-soft);
+    letter-spacing:.3px;
+  }
+
+  .admin-badge{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--green-100);
+    border:1px solid var(--line);
+    color:var(--green-900);
+    font-size:13px;
+    padding:7px 14px;
+    border-radius:999px;
+  }
+
+  .admin-badge .dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--green-600);
+    flex-shrink:0;
+  }
+
+  .admin-badge .admin-name{
+    font-weight:600;
+  }
+
+  /* ---------- Recorder card ---------- */
+  .recorder-card{
+    position:relative;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:32px 28px 28px;
+    box-shadow:var(--shadow);
+    text-align:center;
+  }
+
+  .recorder-dots{
+    display:flex;
+    gap:5px;
+    justify-content:center;
+    margin-bottom:18px;
+  }
+
+  .recorder-dots span{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--green-500);
+  }
+  .recorder-dots span:nth-child(2){ opacity:.6; }
+  .recorder-dots span:nth-child(3){ opacity:.3; }
+
+  .eyebrow{
+    margin:0 0 6px;
+    font-size:12px;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--green-600);
+    font-weight:600;
+  }
+
+  h1{
+    margin:0 0 8px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:24px;
+    font-weight:600;
+    color:var(--green-900);
+  }
+
+  .hint{
+    margin:0 auto 28px;
+    max-width:380px;
+    font-size:14px;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+
+  .recorder-controls{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+
+  .mic-btn, .stop-btn{
+    border:none;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+
+  .mic-btn{
+    width:72px;
+    height:72px;
+    border-radius:50%;
+    background:var(--green-700);
+    color:#fff;
+    box-shadow:0 6px 18px rgba(30,122,77,.35);
+  }
+
+  .mic-btn:hover:not(:disabled){
+    background:var(--green-600);
+    transform:translateY(-2px);
+  }
+
+  .mic-btn:disabled{
+    background:var(--ink-soft);
+    box-shadow:none;
+    cursor:not-allowed;
+    opacity:.5;
+  }
+
+  .stop-btn{
+    width:52px;
+    height:52px;
+    border-radius:50%;
+    background:var(--paper);
+    border:1.5px solid var(--line);
+    color:var(--green-900);
+  }
+
+  .stop-btn:hover:not(:disabled){
+    border-color:var(--green-600);
+    color:var(--green-600);
+  }
+
+  .stop-btn:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+  }
+
+  button:focus-visible{
+    outline:2px solid var(--green-600);
+    outline-offset:3px;
+  }
+
+  .mic-btn.is-recording{
+    animation:pulseRing 1.4s ease-out infinite;
+  }
+
+  @keyframes pulseRing{
+    0%{ box-shadow:0 0 0 0 rgba(30,122,77,.45); }
+    70%{ box-shadow:0 0 0 16px rgba(30,122,77,0); }
+    100%{ box-shadow:0 0 0 0 rgba(30,122,77,0); }
+  }
+
+  .waveform{
+    display:flex;
+    align-items:center;
+    height:32px;
+  }
+
+  .waveform span{
+    display:inline-block;
+    width:4px;
+    height:24px;
+    margin:0 2px;
+    background:var(--green-500);
+    border-radius:2px;
+    transform:scaleY(.25);
+    transition:transform .2s ease;
+  }
+
+  .waveform.active span{
+    animation:wave 1s ease-in-out infinite;
+  }
+  .waveform.active span:nth-child(2){ animation-delay:.1s; }
+  .waveform.active span:nth-child(3){ animation-delay:.2s; }
+  .waveform.active span:nth-child(4){ animation-delay:.3s; }
+  .waveform.active span:nth-child(5){ animation-delay:.15s; }
+
+  @keyframes wave{
+    0%, 100%{ transform:scaleY(.25); }
+    50%{ transform:scaleY(1); }
+  }
+
+  .status{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    margin:0;
+    font-size:14px;
+    font-weight:500;
+    color:var(--ink-soft);
+  }
+
+  .status::before{
+    content:"";
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--ink-soft);
+  }
+
+  .status.recording{ color:var(--green-700); }
+  .status.recording::before{ background:var(--green-600); }
+
+  .status.processing{ color:var(--amber); }
+  .status.processing::before{ background:var(--amber); }
+
+  .status.done{ color:var(--green-700); }
+  .status.done::before{ background:var(--green-600); }
+
+  .status.error{ color:var(--error); }
+  .status.error::before{ background:var(--error); }
+
+  /* ---------- Response receipt ---------- */
+  #responseCard{
+    margin-top:32px;
+  }
+
+  .receipt{
+    position:relative;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-top:none;
+    border-radius:0 0 14px 14px;
+    padding:24px 26px 20px;
+    box-shadow:var(--shadow);
+  }
+
+  .receipt::before{
+    content:"";
+    position:absolute;
+    top:-9px;
+    left:0;
+    right:0;
+    height:9px;
+    background-image:
+      linear-gradient(135deg, var(--bg-soft) 50%, transparent 50%),
+      linear-gradient(45deg, transparent 50%, var(--bg-soft) 50%);
+    background-position:0 0, 9px 0;
+    background-size:18px 18px;
+    background-repeat:repeat-x;
+  }
+
+  .receipt-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    color:var(--green-600);
+    border-bottom:1px dashed var(--line);
+    padding-bottom:14px;
+    margin-bottom:16px;
+  }
+
+  #timestamp{
+    color:var(--ink-soft);
+    text-transform:none;
+    letter-spacing:0;
+  }
+
+  .receipt-message{
+    margin:0 0 18px;
+    font-size:16px;
+    line-height:1.6;
+    color:var(--ink);
+  }
+
+  .receipt-audio{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    color:var(--ink-soft);
+    margin-bottom:16px;
+  }
+
+  .audio-dot{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--green-600);
+  }
+
+  audio{
+    width:100%;
+    height:32px;
+    margin-bottom:16px;
+  }
+
+  .raw-toggle summary{
+    cursor:pointer;
+    font-size:12px;
+    color:var(--green-600);
+    font-weight:600;
+    list-style:none;
+  }
+
+  .raw-toggle summary::-webkit-details-marker{ display:none; }
+
+  .raw-toggle summary::before{
+    content:"▸ ";
+  }
+
+  .raw-toggle[open] summary::before{
+    content:"▾ ";
+  }
+
+  pre{
+    margin-top:12px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    line-height:1.6;
+    background:var(--bg-soft);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    overflow-x:auto;
+    color:var(--ink);
+  }
+
+  footer{
+    text-align:center;
+    margin-top:40px;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+
+  @media (max-width:480px){
+    .recorder-card{ padding:26px 18px 22px; }
+    h1{ font-size:20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .mic-btn.is-recording{ animation:none; }
+    .waveform.active span{ animation:none; transform:scaleY(.6); }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">VI</span>
+      <div class="brand-text">
+        <strong>Voice Inventory</strong>
+        <span>Manager</span>
+      </div>
+    </div>
+
+    <div id="adminBadge" class="admin-badge" hidden>
+      <span class="dot"></span>
+      Signed in as <span class="admin-name"><%= username %></span>
+    </div>
+  </header>
+
+  <main>
+    <section class="recorder-card">
+      <div class="recorder-dots"><span></span><span></span><span></span></div>
+
+      <p class="eyebrow">Voice command</p>
+      <h1>Tell the system what changed</h1>
+      <p class="hint">Press record and say something like "Add 12 units of SKU 4471 to aisle 3," then stop to send it.</p>
+
+      <div class="recorder-controls">
+        <button id="startBtn" class="mic-btn" aria-label="Start recording">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="2" width="6" height="11" rx="3"></rect>
+            <path d="M5 10v1a7 7 0 0 0 14 0v-1"></path>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="8" y1="22" x2="16" y2="22"></line>
+          </svg>
+        </button>
+
+        <button id="stopBtn" class="stop-btn" disabled aria-label="Stop recording">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="5" y="5" width="14" height="14" rx="2"></rect>
+          </svg>
+        </button>
+
+        <div class="waveform" id="waveform">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <p id="status" class="status idle">Ready</p>
+    </section>
+
+    <section id="responseCard" hidden>
+      <div class="receipt">
+        <div class="receipt-head">
+          <span>Assistant response</span>
+          <span id="timestamp"></span>
+        </div>
+
+        <p id="messageText" class="receipt-message"></p>
+
+        <div class="receipt-audio">
+          <span class="audio-dot"></span> Voice reply
+        </div>
+        <audio id="audioPlayer" controls></audio>
+
+        <details class="raw-toggle">
+          <summary>View raw data</summary>
+          <pre id="result"></pre>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer>Voice Inventory Manager</footer>
+</div>
+
+<script>
+
+let mediaRecorder;
+let audioChunks = [];
+
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const status = document.getElementById("status");
+const result = document.getElementById("result");
+
+// New elements used only for nicer display — recording/upload logic below is unchanged
+const waveform = document.getElementById("waveform");
+const responseCard = document.getElementById("responseCard");
+const messageText = document.getElementById("messageText");
+const timestampEl = document.getElementById("timestamp");
+const audioPlayer = document.getElementById("audioPlayer");
+
+function setStatus(text, state){
+    status.innerText = text;
+    status.className = "status" + (state ? " " + state : "");
+}
+
+function renderResponse(data){
+    // Raw data is still kept exactly as before, just tucked into a collapsible panel
+    result.textContent = JSON.stringify(data, null, 2);
+
+    const message =
+        data.message || data.text || data.reply || data.response ||
+        "Command processed. See raw data for details.";
+
+    messageText.textContent = message;
+    timestampEl.textContent = new Date().toLocaleTimeString();
+    responseCard.hidden = false;
+}
+
+startBtn.addEventListener("click", async () => {
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+        audio:true
+    });
+
+    mediaRecorder = new MediaRecorder(stream);
+
+    audioChunks = [];
+
+    mediaRecorder.ondataavailable = event => {
+        audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = async () => {
+
+        setStatus("Uploading audio...", "processing");
+
+        const audioBlob = new Blob(audioChunks,{
+            type:"audio/webm"
+        });
+
+        const formData = new FormData();
+        formData.append("audio", audioBlob, "voice.webm");
+
+        try{
+
+            const response = await fetch("/voice-command",{
+                method:"POST",
+                body:formData,
+                credentials:"include"
+            });
+
+            const data = await response.json();
+
+            const audio = new Audio(
+              "data:audio/mpeg;base64," + data.audio
+            );
+
+            audio.play();
+
+            // Mirror the same audio into a visible player so it can be replayed
+            audioPlayer.src = audio.src;
+
+            renderResponse(data);
+
+            setStatus("Completed", "done");
+
+        }catch(err){
+
+            setStatus("Error", "error");
+
+            result.textContent = err.message;
+        }
+    };
+
+    mediaRecorder.start();
+
+    setStatus("Recording...", "recording");
+    startBtn.classList.add("is-recording");
+    waveform.classList.add("active");
+
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+});
+
+stopBtn.addEventListener("click",()=>{
+
+    mediaRecorder.stop();
+
+    startBtn.classList.remove("is-recording");
+    waveform.classList.remove("active");
+
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+});
+
+// ---------- Admin badge ----------
+// Checks the backend for a logged-in user and shows "Signed in as <username>" if found.
+// Adjust the URL/response fields below to match your actual auth endpoint.
+async function loadAdminInfo(){
+    const adminBadge = document.getElementById("adminBadge");
+
+    try{
+        const res = await fetch("/api/user", { credentials:"include" });
+        if(!res.ok) return;
+
+        const data = await res.json();
+        const username = data.username || (data.user && data.user.username);
+
+        if(username){
+            adminBadge.querySelector(".admin-name").textContent = username;
+            adminBadge.hidden = false;
+        }
+    }catch(e){
+        // Not logged in or endpoint unreachable — badge stays hidden
+    }
+}
+
+loadAdminInfo();
+
+</script>
+
+</body>
+</html>

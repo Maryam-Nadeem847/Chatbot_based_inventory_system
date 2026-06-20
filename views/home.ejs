@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Voice Inventory Assistant</title>
+    <style>
+        body{
+            font-family: Arial, sans-serif;
+            text-align:center;
+            margin-top:50px;
+        }
+
+    button{
+        padding:15px 30px;
+        font-size:18px;
+        margin:10px;
+        cursor:pointer;
+    }
+
+    #status{
+        margin-top:20px;
+        font-size:18px;
+        color:green;
+    }
+
+    pre{
+        width:80%;
+        margin:auto;
+        margin-top:20px;
+        text-align:left;
+        background:#f4f4f4;
+        padding:15px;
+        border-radius:10px;
+    }
+</style>
+```
+
+</head>
+<body>
+
+<h1>Voice Inventory Manager</h1>
+
+<button id="startBtn">🎤 Start Recording</button> <button id="stopBtn" disabled>⏹ Stop Recording</button>
+
+<p id="status">Ready</p>
+
+<pre id="result"></pre>
+
+<script>
+
+let mediaRecorder;
+let audioChunks = [];
+
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const status = document.getElementById("status");
+const result = document.getElementById("result");
+
+startBtn.addEventListener("click", async () => {
+
+    const stream = await navigator.mediaDevices.getUserMedia({
+        audio:true
+    });
+
+    mediaRecorder = new MediaRecorder(stream);
+
+    audioChunks = [];
+
+    mediaRecorder.ondataavailable = event => {
+        audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = async () => {
+
+        status.innerText = "Uploading audio...";
+
+        const audioBlob = new Blob(audioChunks,{
+            type:"audio/webm"
+        });
+
+        const formData = new FormData();
+        formData.append("audio", audioBlob, "voice.webm");
+
+        try{
+
+            const response = await fetch("/voice-command",{
+                method:"POST",
+                body:formData,
+                credentials:"include"
+            });
+
+            const data = await response.json();
+
+const audio = new Audio(
+  "data:audio/mpeg;base64," + data.audio
+);
+
+audio.play();
+
+
+
+            result.textContent =
+                JSON.stringify(data,null,2);
+
+            status.innerText = "Completed";
+
+        }catch(err){
+
+            status.innerText = "Error";
+
+            result.textContent = err.message;
+        }
+    };
+
+    mediaRecorder.start();
+
+    status.innerText = "Recording...";
+
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+});
+
+stopBtn.addEventListener("click",()=>{
+
+    mediaRecorder.stop();
+
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+});
+
+</script>
+
+</body>
+</html>
