@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-sans);background:var(--color-background-tertiary);color:var(--color-text-primary)}
+a{text-decoration:none;color:inherit}
+.teal{color:#0F6E56}
+
+nav{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:500}
+.logo-icon{width:32px;height:32px;background:#0F6E56;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-links{display:flex;align-items:center;gap:1.25rem}
+.nav-links .nav-text{font-size:13px;color:var(--color-text-secondary)}
+.hamburger{display:none;background:none;border:0.5px solid var(--color-border-secondary);border-radius:6px;padding:6px 8px;cursor:pointer;color:var(--color-text-primary)}
+.mobile-menu{display:none;flex-direction:column;gap:0;background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:0.5rem 1.5rem 1rem}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:14px;color:var(--color-text-secondary);padding:10px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.mobile-menu a:last-child{border-bottom:none}
+.mobile-menu .mob-btns{display:flex;gap:8px;padding-top:10px}
+
+.btn-primary,.btn-outline,.btn-white,.btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-family:var(--font-sans);font-size:14px;border-radius:var(--border-radius-md);transition:background .15s ease}
+.btn-primary{background:#0F6E56;color:#fff;border:none;padding:8px 18px}
+.btn-primary:hover{background:#085041}
+.btn-outline{background:transparent;border:0.5px solid var(--color-border-secondary);padding:8px 18px;color:var(--color-text-primary)}
+.btn-outline:hover{background:var(--color-background-secondary)}
+.btn-large{padding:12px 24px;font-size:15px}
+
+.hero{padding:3.5rem 1.5rem 2.5rem;text-align:center;max-width:760px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:#E1F5EE;color:#0F6E56;font-size:12px;padding:4px 12px;border-radius:20px;margin-bottom:1.25rem}
+.badge-dot{animation:pulseDot 1.8s ease-in-out infinite}
+.hero h1{font-size:36px;font-weight:500;line-height:1.2;margin-bottom:1rem;letter-spacing:-0.3px}
+.hero h1 span{color:#0F6E56}
+.hero p{font-size:16px;color:var(--color-text-secondary);line-height:1.7;max-width:520px;margin:0 auto 1.75rem}
+.hero-btns{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+
+.mic-demo{margin:2.5rem auto 0;max-width:400px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.25rem}
+.mic-label{font-size:12px;color:var(--color-text-secondary);margin-bottom:0.75rem;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px}
+.rec-dot{width:6px;height:6px;border-radius:50%;background:#0F6E56;animation:pulseDot 1.6s ease-in-out infinite;display:inline-block}
+@keyframes pulseDot{0%,100%{opacity:.35;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+.waveform{display:flex;align-items:center;justify-content:center;gap:3px;height:44px;margin-bottom:0.75rem}
+.waveform .bar{width:4px;background:#0F6E56;border-radius:2px;animation:wave 1.2s ease-in-out infinite}
+.waveform .bar:nth-child(1){animation-delay:0s}.waveform .bar:nth-child(2){animation-delay:.1s}.waveform .bar:nth-child(3){animation-delay:.2s}.waveform .bar:nth-child(4){animation-delay:.3s}.waveform .bar:nth-child(5){animation-delay:.4s}.waveform .bar:nth-child(6){animation-delay:.5s}.waveform .bar:nth-child(7){animation-delay:.4s}.waveform .bar:nth-child(8){animation-delay:.3s}.waveform .bar:nth-child(9){animation-delay:.2s}.waveform .bar:nth-child(10){animation-delay:.1s}.waveform .bar:nth-child(11){animation-delay:0s}
+@keyframes wave{0%,100%{height:8px}50%{height:34px}}
+.voice-text{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:9px 12px;font-size:13px;color:var(--color-text-secondary);text-align:center}
+.voice-response{margin-top:7px;background:#E1F5EE;border-radius:var(--border-radius-md);padding:9px 12px;font-size:13px;color:#085041;text-align:center}
+
+.lang-strip{background:var(--color-background-secondary);border-top:0.5px solid var(--color-border-tertiary);border-bottom:0.5px solid var(--color-border-tertiary);padding:1rem 1.5rem;text-align:center}
+.lang-pills{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.pill{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--color-text-secondary)}
+
+.section{padding:3rem 1.5rem;max-width:960px;margin:0 auto}
+.section-label{font-size:12px;color:#0F6E56;font-weight:500;text-transform:uppercase;letter-spacing:1px;margin-bottom:.6rem}
+.section h2{font-size:26px;font-weight:500;margin-bottom:.6rem}
+.section .sub{font-size:14px;color:var(--color-text-secondary);line-height:1.7;max-width:500px;margin-bottom:2rem}
+
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.feature-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1.1rem}
+.feature-icon{width:36px;height:36px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;margin-bottom:.85rem;font-size:17px}
+.fi-teal{background:#E1F5EE;color:#0F6E56}
+.fi-amber{background:#FAEEDA;color:#BA7517}
+.fi-blue{background:#E6F1FB;color:#185FA5}
+.fi-coral{background:#FAECE7;color:#993C1D}
+.feature-card h3{font-size:14px;font-weight:500;margin-bottom:.35rem}
+.feature-card p{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:2.5rem 0}
+.stat-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.85rem;text-align:center}
+.stat-card .num{font-size:26px;font-weight:500;color:#0F6E56}
+.stat-card .lbl{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+
+.how-it-works{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);border-bottom:0.5px solid var(--color-border-tertiary);padding:3rem 1.5rem}
+.how-inner{max-width:960px;margin:0 auto}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;margin-top:2rem}
+.step{text-align:center}
+.step-num{width:42px;height:42px;border-radius:50%;background:#0F6E56;color:#fff;font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center;margin:0 auto .85rem;box-shadow:0 0 0 6px #E1F5EE}
+.step h3{font-size:14px;font-weight:500;margin-bottom:.35rem}
+.step p{font-size:13px;color:var(--color-text-secondary);line-height:1.6}
+
+.commands-section{padding:3rem 1.5rem;max-width:960px;margin:0 auto}
+.commands-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-top:1.5rem}
+.cmd-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:.9rem 1.1rem;display:flex;align-items:flex-start;gap:10px}
+.cmd-badge{font-size:11px;padding:3px 7px;border-radius:4px;font-weight:500;white-space:nowrap;flex-shrink:0;margin-top:1px}
+.cb-add{background:#E1F5EE;color:#085041}
+.cb-sale{background:#FAECE7;color:#993C1D}
+.cb-check{background:#E6F1FB;color:#0C447C}
+.cb-report{background:#FAEEDA;color:#854F0B}
+.cb-buy{background:#EAF3DE;color:#3B6D11}
+.cmd-text{font-size:13px;color:var(--color-text-secondary);line-height:1.5}
+.cmd-text strong{color:var(--color-text-primary);font-weight:500;display:block;margin-bottom:2px;font-size:13px}
+
+.cta-section{background:#0F6E56;padding:3.5rem 1.5rem;text-align:center}
+.cta-section h2{font-size:26px;font-weight:500;color:#fff;margin-bottom:.65rem}
+.cta-section p{font-size:14px;color:#9FE1CB;margin-bottom:1.75rem}
+.cta-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-white{background:#fff;color:#0F6E56;border:none;padding:11px 24px;font-weight:500}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;padding:11px 24px}
+
+footer{background:var(--color-background-primary);border-top:0.5px solid var(--color-border-tertiary);padding:2.5rem 1.5rem 1.5rem}
+.footer-inner{max-width:960px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:1.5rem;margin-bottom:2rem}
+.footer-brand p{font-size:13px;color:var(--color-text-secondary);line-height:1.7;margin-top:.6rem;max-width:200px}
+.footer-col h4{font-size:13px;font-weight:500;margin-bottom:.65rem}
+.footer-col a{display:block;font-size:13px;color:var(--color-text-secondary);margin-bottom:.35rem;cursor:pointer}
+.footer-bottom{border-top:0.5px solid var(--color-border-tertiary);padding-top:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.footer-bottom p{font-size:12px;color:var(--color-text-secondary)}
+
+@media (max-width: 640px) {
+  .nav-links{display:none}
+  .hamburger{display:flex;align-items:center;gap:4px;font-size:13px}
+
+  .hero{padding:2.5rem 1.25rem 2rem}
+  .hero h1{font-size:28px}
+  .hero p{font-size:15px}
+  .hero-btns{flex-direction:column;align-items:stretch}
+  .hero-btns a,.hero-btns button{width:100%;justify-content:center}
+  .btn-large{padding:13px 20px}
+
+  .mic-demo{margin:2rem 0 0}
+
+  .features-grid{grid-template-columns:1fr 1fr}
+  .stats{grid-template-columns:1fr 1fr}
+  .steps{grid-template-columns:1fr}
+
+  .commands-grid{grid-template-columns:1fr}
+
+  .footer-grid{grid-template-columns:1fr 1fr;gap:1.25rem}
+  .footer-brand{grid-column:1/-1}
+  .footer-brand p{max-width:100%}
+
+  .cta-btns{flex-direction:column;align-items:stretch}
+  .cta-btns a,.cta-btns button{width:100%;justify-content:center}
+
+  .lang-pills .pill{font-size:11px;padding:3px 10px}
+}
+
+@media (max-width:360px){
+  .hero h1{font-size:24px}
+  .features-grid{grid-template-columns:1fr}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .badge-dot,.rec-dot,.waveform .bar{animation:none}
+}
+</style>
+
+<nav>
+  <div class="logo">
+    <div class="logo-icon"><i class="ti ti-microphone" style="color:#fff;font-size:15px" aria-hidden="true"></i></div>
+    DukaanBot
+  </div>
+  <div class="nav-links">
+    <a class="nav-text" href="#features">Features</a>
+    <a class="nav-text" href="#how">Kaise kaam karta hai</a>
+    <a class="nav-text" href="#commands">Commands</a>
+    <a href="/login" class="btn-outline">Login</a>
+    <a href="/register" class="btn-primary">Free mein shuru karein</a>
+  </div>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <i class="ti ti-menu-2" style="font-size:18px" aria-hidden="true"></i>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#features">Features</a>
+  <a href="/admin_panel">Admin Space</a>
+  <a href="#how">Kaise kaam karta hai</a>
+  <a href="#commands">Commands</a>
+  <div class="mob-btns">
+    <a href="/login" class="btn-outline" style="flex:1;justify-content:center">Login</a>
+    <a href="/register" class="btn-primary" style="flex:1;justify-content:center">Register</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-badge"><i class="ti ti-circle-filled badge-dot" style="font-size:8px;color:#0F6E56" aria-hidden="true"></i> Urdu, Roman Urdu aur English — teeno mein</div>
+  <h1>Apni dukaan ka hisaab<br><span>awaaz se rakho</span></h1>
+  <p>Bolein aur DukaanBot inventory update kare. Koi form nahi, koi typing nahi — sirf baat karein apne shop assistant se.</p>
+  <div class="hero-btns">
+    <a href="/register" class="btn-primary btn-large">Abhi shuru karein — bilkul free</a>
+    <button class="btn-outline btn-large">Demo dekhein ↗</button>
+  </div>
+  <div class="mic-demo">
+    <p class="mic-label"><i class="ti ti-microphone" aria-hidden="true"></i> Bolo kuch bhi... <span class="rec-dot" aria-hidden="true"></span></p>
+    <div class="waveform">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+    <div class="voice-text" id="voice-sample">"50 kg chawal add karo, cost 120 rupay kilo"</div>
+    <div class="voice-response" id="voice-reply">✓ "Rice" inventory mein add ho gaya — 50kg @ Rs.120/kg</div>
+  </div>
+</div>
+
+<div class="lang-strip">
+  <p style="font-size:13px;color:var(--color-text-secondary)">Yeh languages support karta hai</p>
+  <div class="lang-pills">
+    <span class="pill">🇵🇰 Urdu — اردو</span>
+    <span class="pill">Roman Urdu</span>
+    <span class="pill">English</span>
+    <span class="pill">Mix — "50 kg chawal add karo"</span>
+  </div>
+</div>
+
+<div class="section" id="features">
+  <p class="section-label">Features</p>
+  <h2>Har cheez jo ek dukaan ko chahiye</h2>
+  <p class="sub">Voice se inventory manage karein, sales track karein, aur reports dekhein — sab kuch ek jagah.</p>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon fi-teal"><i class="ti ti-microphone" aria-hidden="true"></i></div><h3>Voice control</h3><p>Urdu, Roman Urdu ya English mein bolein — AI samjhega aur record update karega.</p></div>
+    <div class="feature-card"><div class="feature-icon fi-amber"><i class="ti ti-package" aria-hidden="true"></i></div><h3>Live inventory</h3><p>Har product ka real-time stock dikhe. Kaunsa maal aaya, kaunsa bika, kaunsa bacha.</p></div>
+    <div class="feature-card"><div class="feature-icon fi-blue"><i class="ti ti-chart-bar" aria-hidden="true"></i></div><h3>Sales reports</h3><p>Aaj, is hafte, ya is maheene ki report — ek command mein poora hisaab.</p></div>
+    <div class="feature-card"><div class="feature-icon fi-coral"><i class="ti ti-alert-triangle" aria-hidden="true"></i></div><h3>Low stock alerts</h3><p>"Konsa maal khatam ho raha hai" — aur fauri list mil jaati hai.</p></div>
+    <div class="feature-card"><div class="feature-icon fi-teal"><i class="ti ti-history" aria-hidden="true"></i></div><h3>Ledger history</h3><p>Har transaction record rehta hai. Month start se ab tak ka poora hisaab.</p></div>
+    <div class="feature-card"><div class="feature-icon fi-amber"><i class="ti ti-users" aria-hidden="true"></i></div><h3>Multi-user</h3><p>Dukaan ka malik aur kaamgar — alag accounts, ek inventory.</p></div>
+  </div>
+  <div class="stats">
+    <div class="stat-card"><div class="num">8+</div><div class="lbl">Voice commands</div></div>
+    <div class="stat-card"><div class="num">3</div><div class="lbl">Languages</div></div>
+    <div class="stat-card"><div class="num">100%</div><div class="lbl">Ledger history</div></div>
+    <div class="stat-card"><div class="num">&lt;2s</div><div class="lbl">Response time</div></div>
+  </div>
+</div>
+
+<div class="how-it-works" id="how">
+  <div class="how-inner">
+    <p class="section-label">Kaise kaam karta hai</p>
+    <h2>3 steps mein shuru</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><h3>Account banayein</h3><p>Phone number se register karein. 30 seconds lagenge.</p></div>
+      <div class="step"><div class="step-num">2</div><h3>Mic dabayein</h3><p>Apni dukaan ke products bolein — Urdu mein, Roman mein, ya English mein.</p></div>
+      <div class="step"><div class="step-num">3</div><h3>Record ho jaata hai</h3><p>AI command samjhta hai, inventory update hoti hai, aur confirmation bolke sunata hai.</p></div>
+    </div>
+  </div>
+</div>
+
+<div class="commands-section" id="commands">
+  <p class="section-label">Voice commands</p>
+  <h2>Jo bolein woh ho jaata hai</h2>
+  <p class="sub">Yeh sab commands supported hain — Urdu, Roman Urdu ya English mein.</p>
+  <div class="commands-grid">
+    <div class="cmd-card"><span class="cmd-badge cb-add">Add</span><div class="cmd-text"><strong>"50 kg chawal add karo"</strong>Naya product stock mein daalo</div></div>
+    <div class="cmd-card"><span class="cmd-badge cb-sale">Sale</span><div class="cmd-text"><strong>"5 kg chawal bik gaya"</strong>Sale record karo, stock ghata do</div></div>
+    <div class="cmd-card"><span class="cmd-badge cb-check">Check</span><div class="cmd-text"><strong>"Doodh ka stock kitna hai"</strong>Kisi bhi product ka bacha hua stock</div></div>
+    <div class="cmd-card"><span class="cmd-badge cb-check">Stock</span><div class="cmd-text"><strong>"Sara stock dikhao"</strong>Poori inventory ek baar mein</div></div>
+    <div class="cmd-card"><span class="cmd-badge cb-report">Report</span><div class="cmd-text"><strong>"Is maheene ki report chahiye"</strong>Aaj / hafte / maheene ki sale summary</div></div>
+    <div class="cmd-card"><span class="cmd-badge cb-add">Update</span><div class="cmd-text"><strong>"Chawal ki price 150 kar do"</strong>Price ya status update karo</div></div>
+    <div class="cmd-card"><span class="cmd-badge cb-buy">Purchase</span><div class="cmd-text"><strong>"20 packet biscuit aur aaya"</strong>Restock — stock badha do</div></div>
+    <div class="cmd-card"><span class="cmd-badge cb-sale">Low stock</span><div class="cmd-text"><strong>"Konsa maal khatam ho raha hai"</strong>Low stock products ki list</div></div>
+  </div>
+</div>
+
+<div class="cta-section">
+  <h2>Apni dukaan ka hisaab shuru karein aaj</h2>
+  <p>Free account banayein — koi credit card nahi, koi contract nahi.</p>
+  <div class="cta-btns">
+    <a href="/register" class="btn-white btn-primary">Free mein register karein</a>
+    <button class="btn-ghost">Pricing poochein ↗</button>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo"><div class="logo-icon"><i class="ti ti-microphone" style="color:#fff;font-size:15px" aria-hidden="true"></i></div>DukaanBot</div>
+        <p>Pakistan ke chote dukaan daaron ke liye voice-first inventory management.</p>
+      </div>
+      <div class="footer-col"><h4>Product</h4><a href="#features">Features</a><a href="#commands">Commands</a><a href="#how">Kaise kaam karta hai</a></div>
+      <div class="footer-col"><h4>Support</h4><a>Help center</a><a>Command guide</a><a>Bug report</a></div>
+      <div class="footer-col"><h4>Account</h4><a href="/login">Login</a><a href="/register">Sign up</a><a>Privacy</a></div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 DukaanBot. Pakistan mein banaya gaya.</p>
+      <div style="display:flex;gap:1rem"><a href="#" style="font-size:12px;color:var(--color-text-secondary)">Terms</a><a href="#" style="font-size:12px;color:var(--color-text-secondary)">Privacy</a></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function toggleMenu(){
+  const m=document.getElementById('mobileMenu');
+  m.classList.toggle('open');
+}
+
+const samples=[
+  {cmd:'"50 kg chawal add karo, cost 120 rupay kilo"',res:'✓ "Rice" inventory mein add ho gaya — 50kg @ Rs.120/kg'},
+  {cmd:'"aaj 5 kg doodh bika, 80 rupay litre"',res:'✓ 5 litre Milk sold record ho gaya. Bacha hua: 45 litre'},
+  {cmd:'"sugar ka stock kitna hai"',res:'✓ Sugar: Total aaya 100kg, bika 30kg, bacha 70kg'},
+  {cmd:'"is hafte ki report chahiye"',res:'✓ Week report: Rice Rs.750, Sugar Rs.2400, Milk Rs.480'},
+  {cmd:'"konsa maal khatam ho raha hai"',res:'⚠ Salt: 3kg, Biscuit: 5 packets — restock zaroor karein'}
+];
+let si=0;
+setInterval(()=>{
+  si=(si+1)%samples.length;
+  document.getElementById('voice-sample').textContent=samples[si].cmd;
+  document.getElementById('voice-reply').textContent=samples[si].res;
+},3000);
+</script>
