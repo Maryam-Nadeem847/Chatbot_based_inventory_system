@@ -2,11 +2,11 @@
   "name": "voice-inventory-backend",
   "version": "2.0.0",
   "description": "Voice & Natural Language based Inventory Management System — Backend (Express + Firebase + Groq Whisper + edge-tts)",
-  "main": "src/server.js",
+  "main": "src/backened.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "start": "node src/backened.js",
+    "dev": "nodemon src/backened.js"
   },
   "dependencies": {
     "axios": "^1.7.2",
@@ -21,6 +21,9 @@
     "groq-js": "^1.30.2",
     "groq-sdk": "^1.2.1",
     "mongodb": "^7.3.0",
+    "mongoose": "^9.7.1",
+    "multer": "^2.2.0",
+    "node-fetch": "^3.3.2",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^9.1.0"

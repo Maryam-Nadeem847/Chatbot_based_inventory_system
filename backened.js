@@ -18,7 +18,7 @@ const session=require("express-session");
 // 1: require connect-flash
 const User=require("./models/users.js");
 const Product=require("./models/product.js");
-const passportLocalMongoose= require("passport-local-mongoose");
+const passportLocalMongoose= require("passport-local-mongoose").default;
 const LocalStrategy=require("passport-local").Strategy;
 const passport = require("passport");
 const {Groq} = require("groq-sdk");
@@ -27,7 +27,7 @@ const fetch = require("node-fetch");
 // const multer  = require('multer')
 // const upload = multer({ storage })
 const multer = require("multer");
-const MongoStore = require("connect-mongo");
+const MongoStore = require("connect-mongo").default;
 
 
 const storage = multer.diskStorage({
