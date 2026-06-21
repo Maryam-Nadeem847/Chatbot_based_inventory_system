@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analytics — DukaanBot</title>
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  <style>
+    :root {
+      --green-700: #15803d;
+      --green-600: #16a34a;
+      --green-100: #dcfce7;
+      --green-50:  #f0fdf4;
+      --green-200: #bbf7d0;
+      --white:     #ffffff;
+      --gray-100:  #f3f4f6;
+      --gray-400:  #9ca3af;
+      --gray-500:  #6b7280;
+      --gray-700:  #374151;
+      --gray-800:  #1f2937;
+      --gray-900:  #111827;
+      --red-100:   #fee2e2;
+      --red-500:   #ef4444;
+      --radius:    14px;
+      --shadow:    0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.05);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--green-50);
+      color: var(--gray-900);
+      min-height: 100vh;
+    }
+
+    /* Navbar */
+    .topnav {
+      background: var(--white);
+      border-bottom: 1.5px solid var(--green-100);
+      padding: 0 28px; height: 62px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 1px 8px rgba(22,163,74,.06);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-brand .icon {
+      width: 34px; height: 34px; background: var(--green-600);
+      border-radius: 9px; display: grid; place-items: center;
+      font-size: 18px; box-shadow: 0 2px 8px rgba(22,163,74,.3);
+    }
+    .nav-brand span { font-size: 17px; font-weight: 800; color: var(--green-700); letter-spacing: -.3px; }
+    .nav-links { display: flex; gap: 2px; }
+    .nav-links a {
+      text-decoration: none; color: var(--gray-500);
+      font-size: 13.5px; font-weight: 500;
+      padding: 7px 14px; border-radius: 8px; transition: all .15s;
+    }
+    .nav-links a:hover { color: var(--green-700); background: var(--green-50); }
+    .nav-links a.active { color: var(--green-700); background: var(--green-100); font-weight: 600; }
+    .nav-user { display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: var(--gray-700); font-weight: 500; }
+    .avatar {
+      width: 33px; height: 33px; background: var(--green-600);
+      border-radius: 50%; display: grid; place-items: center;
+      color: white; font-size: 13px; font-weight: 700;
+    }
+
+    /* Layout */
+    .page { max-width: 1200px; margin: 0 auto; padding: 36px 24px 72px; }
+    .page-header { margin-bottom: 36px; }
+    .eyebrow {
+      font-size: 11.5px; font-weight: 700; letter-spacing: .09em;
+      text-transform: uppercase; color: var(--green-600); margin-bottom: 6px;
+    }
+    .page-header h1 { font-size: 26px; font-weight: 800; color: var(--gray-900); line-height: 1.2; }
+    .page-header p { margin-top: 5px; color: var(--gray-500); font-size: 14.5px; }
+
+    /* Section labels */
+    .section-label { display: flex; align-items: center; gap: 12px; margin: 44px 0 20px; }
+    .section-label .pill {
+      background: var(--green-100); color: var(--green-700);
+      font-size: 11px; font-weight: 700; letter-spacing: .07em;
+      text-transform: uppercase; padding: 4px 12px; border-radius: 20px; white-space: nowrap;
+    }
+    .section-label h2 { font-size: 16px; font-weight: 700; color: var(--gray-800); white-space: nowrap; }
+    .divider { flex: 1; height: 1px; background: var(--green-200); }
+
+    /* Cards */
+    .chart-card {
+      background: var(--white); border: 1.5px solid var(--green-100);
+      border-radius: var(--radius); padding: 22px 22px 12px; box-shadow: var(--shadow);
+    }
+    .card-title { font-size: 14px; font-weight: 700; color: var(--gray-800); margin-bottom: 3px; }
+    .card-sub { font-size: 12px; color: var(--gray-400); margin-bottom: 16px; }
+    .chart-full { margin-bottom: 20px; }
+    .chart-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 820px) { .chart-row-2 { grid-template-columns: 1fr; } }
+
+    /* Alert */
+    .alert-banner {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--red-100); border: 1.5px solid #fca5a5;
+      border-radius: 10px; padding: 13px 18px; margin-bottom: 18px;
+      font-size: 13px; font-weight: 600; color: #b91c1c;
+    }
+    .blink {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--red-500); flex-shrink: 0;
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: .4; transform: scale(1.4); }
+    }
+
+    /* Empty */
+    .empty {
+      display: grid; place-items: center; height: 180px;
+      color: var(--gray-400); font-size: 13.5px; gap: 8px;
+    }
+    .empty span { font-size: 28px; }
+  </style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="/" class="nav-brand">
+    <div class="icon">🤖</div>
+    <span>DukaanBot</span>
+  </a>
+  <div class="nav-links">
+    <a href="/admin_panel">Dashboard</a>
+    <a href="/analytics" class="active">Analytics</a>
+  </div>
+  <div class="nav-user">
+    <div class="avatar"><%= username[0].toUpperCase() %></div>
+    <span><%= username %></span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <div class="eyebrow">Business Intelligence</div>
+    <h1>Analytics Dashboard</h1>
+    <p>Apni dukaan ki poori picture — ek nazar mein.</p>
+  </div>
+
+  <!-- SALES & FINANCE -->
+  <div class="section-label">
+    <div class="pill">Sales & Finance</div>
+    <h2>Paisa kahan se aa raha hai</h2>
+    <div class="divider"></div>
+  </div>
+
+  <div class="chart-card chart-full">
+    <div class="card-title">📈 Daily Revenue vs Profit — Last 30 Days</div>
+    <div class="card-sub">Har din ki total bikri aur net munafa</div>
+    <div id="chart-revenue" style="height:300px;"></div>
+  </div>
+
+  <div class="chart-row-2">
+    <div class="chart-card">
+      <div class="card-title">📊 Monthly Comparison</div>
+      <div class="card-sub"><%= lastMonthName %> vs <%= thisMonthName %></div>
+      <div id="chart-monthly" style="height:280px;"></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">💰 Revenue Breakdown</div>
+      <div class="card-sub">Gross profit aur COGS ka hissa</div>
+      <div id="chart-donut" style="height:280px;"></div>
+    </div>
+  </div>
+
+  <!-- INVENTORY HEALTH -->
+  <div class="section-label">
+    <div class="pill">Inventory Health</div>
+    <h2>Stock ka haal</h2>
+    <div class="divider"></div>
+  </div>
+
+  <% if (hasLowStock) { %>
+  <div class="alert-banner">
+    <div class="blink"></div>
+    Kuch products ka stock khatam hone wala hai — abhi reorder karein!
+  </div>
+  <% } %>
+
+  <div class="chart-row-2">
+    <div class="chart-card">
+      <div class="card-title">⚠️ Low Stock Alert</div>
+      <div class="card-sub">Current stock vs minimum threshold (10 units)</div>
+      <div id="chart-lowstock" style="height:300px;"></div>
+    </div>
+    <div class="chart-card">
+      <div class="card-title">🏆 Top 5 Selling Products</div>
+      <div class="card-sub">Quantity ke hisaab se sab se zyada bikne wale</div>
+      <div id="chart-topselling" style="height:300px;"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const CFG   = { responsive: true, displayModeBar: false };
+  const BLANK = 'rgba(0,0,0,0)';
+  const GRID  = '#f3f4f6';
+  const G     = '#16a34a';
+  const G2    = '#86efac';
+  const AMBR  = '#f59e0b';
+  const RED   = '#ef4444';
+  const BASE  = {
+    paper_bgcolor: BLANK, plot_bgcolor: BLANK,
+    font: { family: 'Inter, system-ui, sans-serif', color: '#374151', size: 12 },
+    margin: { t: 16, b: 44, l: 52, r: 16 },
+    showlegend: true,
+    legend: { orientation: 'h', y: -0.22, x: 0 },
+  };
+
+  // Chart 1: Revenue vs Profit
+  (() => {
+    const labels  = <%- revenueLabels %>;
+    const revenue = <%- revenueValues %>;
+    const profit  = <%- profitValues %>;
+    if (!labels.length) {
+      document.getElementById('chart-revenue').innerHTML =
+        '<div class="empty"><span>📭</span>Abhi koi sales record nahi hai.</div>'; return;
+    }
+    Plotly.newPlot('chart-revenue', [
+      { x: labels, y: revenue, name: 'Revenue (Rs.)', type: 'scatter', mode: 'lines+markers',
+        line: { color: G, width: 2.5, shape: 'spline' }, marker: { size: 5, color: G },
+        fill: 'tozeroy', fillcolor: 'rgba(22,163,74,.08)',
+        hovertemplate: '%{x}<br>Revenue: Rs. %{y:,.0f}<extra></extra>' },
+      { x: labels, y: profit, name: 'Profit (Rs.)', type: 'scatter', mode: 'lines+markers',
+        line: { color: AMBR, width: 2, dash: 'dot', shape: 'spline' }, marker: { size: 5, color: AMBR },
+        hovertemplate: '%{x}<br>Profit: Rs. %{y:,.0f}<extra></extra>' },
+    ], { ...BASE, xaxis: { tickangle: -35, tickfont: { size: 10 }, showgrid: false, nticks: 10 },
+         yaxis: { tickprefix: 'Rs.', gridcolor: GRID, zeroline: false } }, CFG);
+  })();
+
+  // Chart 2: Monthly
+  (() => {
+    const last = <%= lastMonthSales %>;
+    const curr = <%= thisMonthSales %>;
+    const pct  = last > 0 ? (((curr - last) / last) * 100).toFixed(1) : null;
+    Plotly.newPlot('chart-monthly', [
+      { x: ['<%= lastMonthName %>', '<%= thisMonthName %>'], y: [last, curr], type: 'bar',
+        marker: { color: [G2, G], line: { color: [G, G], width: 1.5 } },
+        text: ['Rs. ' + last.toLocaleString(), 'Rs. ' + curr.toLocaleString()],
+        textposition: 'outside', textfont: { size: 12, color: '#374151' },
+        hovertemplate: '%{x}: Rs. %{y:,.0f}<extra></extra>' },
+    ], { ...BASE, showlegend: false, margin: { t: 36, b: 40, l: 64, r: 16 },
+         yaxis: { tickprefix: 'Rs.', gridcolor: GRID, zeroline: false }, xaxis: { gridcolor: GRID },
+         annotations: pct ? [{ x: 0.5, y: 1.08, xref: 'paper', yref: 'paper',
+           text: (pct >= 0 ? '▲ ' : '▼ ') + Math.abs(pct) + '% vs last month',
+           showarrow: false, font: { size: 12, color: pct >= 0 ? G : RED } }] : [] }, CFG);
+  })();
+
+  // Chart 3: Donut
+  (() => {
+    const labels = <%- donutLabels %>;
+    const values = <%- donutValues %>;
+    const total  = values.reduce((a, b) => a + b, 0);
+    if (total === 0) {
+      document.getElementById('chart-donut').innerHTML =
+        '<div class="empty"><span>💰</span>Koi sales data nahi hai abhi.</div>'; return;
+    }
+    Plotly.newPlot('chart-donut', [
+      { labels, values, type: 'pie', hole: 0.54, marker: { colors: [G, '#94a3b8'] },
+        textinfo: 'percent', textfont: { size: 11 },
+        hovertemplate: '%{label}: Rs. %{value:,.0f} (%{percent})<extra></extra>' },
+    ], { ...BASE, margin: { t: 16, b: 16, l: 16, r: 16 },
+         legend: { orientation: 'v', x: 1.02, y: 0.5 },
+         annotations: [{ x: 0.5, y: 0.5, xref: 'paper', yref: 'paper',
+           text: '<b>Rs. ' + total.toLocaleString() + '</b><br><span style="font-size:10px">Total</span>',
+           showarrow: false, font: { size: 12, color: '#111827' } }] }, CFG);
+  })();
+
+  // Chart 4: Low Stock
+  (() => {
+    const names      = <%- lowStockNames %>;
+    const qty        = <%- lowStockQty %>;
+    const thresholds = <%- lowStockThreshold %>;
+    if (!names.length) {
+      document.getElementById('chart-lowstock').innerHTML =
+        '<div class="empty"><span>✅</span>Sab products ka stock theek hai!</div>'; return;
+    }
+    Plotly.newPlot('chart-lowstock', [
+      { y: names, x: qty, name: 'Current Stock', type: 'bar', orientation: 'h',
+        marker: { color: qty.map((q, i) => q <= thresholds[i] * 0.4 ? RED : AMBR) },
+        hovertemplate: '%{y}: %{x} units<extra></extra>' },
+      { y: names, x: thresholds, name: 'Min Threshold', type: 'scatter', mode: 'markers',
+        marker: { symbol: 'line-ew', size: 16, color: '#64748b', line: { color: '#64748b', width: 2.5 } },
+        hovertemplate: 'Threshold: %{x}<extra></extra>' },
+    ], { ...BASE, barmode: 'overlay', margin: { t: 16, b: 40, l: 110, r: 24 },
+         xaxis: { title: 'Units', gridcolor: GRID, zeroline: false },
+         yaxis: { automargin: true, tickfont: { size: 11 } } }, CFG);
+  })();
+
+  // Chart 5: Top 5
+  (() => {
+    const names  = <%- topProductNames %>;
+    const qty    = <%- topProductQty %>;
+    if (!names.length) {
+      document.getElementById('chart-topselling').innerHTML =
+        '<div class="empty"><span>🏆</span>Abhi koi sales record nahi hai.</div>'; return;
+    }
+    const shades = [G, '#22c55e', '#4ade80', '#86efac', '#bbf7d0'];
+    Plotly.newPlot('chart-topselling', [
+      { x: names, y: qty, type: 'bar',
+        marker: { color: names.map((_, i) => shades[i] || shades[4]), line: { color: G, width: 1 } },
+        text: qty.map(q => q + ' units'), textposition: 'outside', textfont: { size: 11, color: '#374151' },
+        hovertemplate: '%{x}: %{y} units sold<extra></extra>' },
+    ], { ...BASE, showlegend: false, margin: { t: 32, b: 52, l: 44, r: 16 },
+         xaxis: { tickangle: -20, tickfont: { size: 11 } },
+         yaxis: { title: 'Qty Sold', gridcolor: GRID, zeroline: false } }, CFG);
+  })();
+</script>
+
+</body>
+</html>

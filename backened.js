@@ -746,6 +746,229 @@ app.post('/products', async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 });
+
+
+
+// ─────────────────────────────────────────
+// ANALYTICS ROUTE
+// Add this to your existing app.js (before the app.listen at the bottom)
+// ─────────────────────────────────────────
+
+app.get("/analytics", IsloggedIn, async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const now = new Date();
+
+    // ── 1. Daily Revenue vs Profit — last 30 days ──────────────────────
+    // Revenue  = sold records → quantity × salePrice
+    // Profit   = revenue − (quantity × costPrice)
+    const thirtyDaysAgo = new Date(now);
+    thirtyDaysAgo.setDate(now.getDate() - 30);
+    thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+    const dailyData = await Product.aggregate([
+      {
+        $match: {
+          userId,
+          status: "sold",
+          createdAt: { $gte: thirtyDaysAgo },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+          },
+          revenue: { $sum: { $multiply: ["$quantity", "$salePrice"] } },
+          cogs:    { $sum: { $multiply: ["$quantity", "$costPrice"] } },
+        },
+      },
+      { $sort: { _id: 1 } },
+      {
+        $project: {
+          date:    "$_id",
+          revenue: { $round: ["$revenue", 0] },
+          profit:  { $round: [{ $subtract: ["$revenue", "$cogs"] }, 0] },
+          _id:     0,
+        },
+      },
+    ]);
+
+    const revenueLabels = dailyData.map((d) => d.date);
+    const revenueValues = dailyData.map((d) => d.revenue);
+    const profitValues  = dailyData.map((d) => d.profit);
+
+    // ── 2. Monthly Comparison ──────────────────────────────────────────
+    const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonthEnd   = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+
+    const [thisMonthAgg, lastMonthAgg] = await Promise.all([
+      Product.aggregate([
+        {
+          $match: {
+            userId,
+            status: "sold",
+            createdAt: { $gte: thisMonthStart },
+          },
+        },
+        {
+          $group: {
+            _id:   null,
+            total: { $sum: { $multiply: ["$quantity", "$salePrice"] } },
+          },
+        },
+      ]),
+      Product.aggregate([
+        {
+          $match: {
+            userId,
+            status: "sold",
+            createdAt: { $gte: lastMonthStart, $lte: lastMonthEnd },
+          },
+        },
+        {
+          $group: {
+            _id:   null,
+            total: { $sum: { $multiply: ["$quantity", "$salePrice"] } },
+          },
+        },
+      ]),
+    ]);
+
+    const thisMonthSales = Math.round(thisMonthAgg[0]?.total || 0);
+    const lastMonthSales = Math.round(lastMonthAgg[0]?.total || 0);
+
+    const monthNames = [
+      "January","February","March","April","May","June",
+      "July","August","September","October","November","December",
+    ];
+    const thisMonthName = monthNames[now.getMonth()];
+    const lastMonthName = monthNames[now.getMonth() === 0 ? 11 : now.getMonth() - 1];
+
+    // ── 3. Gross Profit / COGS / Wastage Donut ────────────────────────
+    // Since your model has no wastage field, wastage = 0
+    // Gross Profit = total revenue − total COGS
+    const allTimeSales = await Product.aggregate([
+      { $match: { userId, status: "sold" } },
+      {
+        $group: {
+          _id:          null,
+          totalRevenue: { $sum: { $multiply: ["$quantity", "$salePrice"] } },
+          totalCOGS:    { $sum: { $multiply: ["$quantity", "$costPrice"] } },
+        },
+      },
+    ]);
+
+    const totalRevenue  = Math.round(allTimeSales[0]?.totalRevenue || 0);
+    const totalCOGS     = Math.round(allTimeSales[0]?.totalCOGS    || 0);
+    const grossProfit   = Math.max(0, totalRevenue - totalCOGS);
+
+    const donutLabels = ["Gross Profit", "COGS"];
+    const donutValues = [grossProfit, totalCOGS];
+
+    // ── 4. Low Stock — using your same ledger aggregation ─────────────
+    // Mirrors your getLowStock() function exactly
+    const THRESHOLD = 10;
+
+    const lowStockRaw = await Product.aggregate([
+      { $match: { userId } },
+      {
+        $group: {
+          _id:        "$name",
+          totalAdded: {
+            $sum: { $cond: [{ $ne: ["$status", "sold"] }, "$quantity", 0] },
+          },
+          totalSold: {
+            $sum: { $cond: [{ $eq: ["$status", "sold"] }, "$quantity", 0] },
+          },
+          unit: { $first: "$unit" },
+        },
+      },
+      {
+        $project: {
+          name:         "$_id",
+          unit:         1,
+          currentStock: { $subtract: ["$totalAdded", "$totalSold"] },
+        },
+      },
+      { $match: { currentStock: { $gte: 0, $lte: THRESHOLD } } },
+      { $sort:  { currentStock: 1 } },
+      { $limit: 10 },
+    ]);
+
+    const lowStockNames     = lowStockRaw.map((p) => p.name);
+    const lowStockQty       = lowStockRaw.map((p) => p.currentStock);
+    const lowStockThreshold = lowStockRaw.map(() => THRESHOLD); // same threshold for all
+
+    // ── 5. Top 5 Selling Products by Quantity ─────────────────────────
+    const topProducts = await Product.aggregate([
+      { $match: { userId, status: "sold" } },
+      {
+        $group: {
+          _id:      "$name",
+          totalQty: { $sum: "$quantity" },
+        },
+      },
+      { $sort:  { totalQty: -1 } },
+      { $limit: 5 },
+      {
+        $project: {
+          name: "$_id",
+          qty:  "$totalQty",
+          _id:  0,
+        },
+      },
+    ]);
+
+    const topProductNames = topProducts.map((p) => p.name);
+    const topProductQty   = topProducts.map((p) => p.qty);
+
+    // ── Render ─────────────────────────────────────────────────────────
+    res.render("analytics", {
+      username: req.user.username,
+
+      // Chart 1
+      revenueLabels: JSON.stringify(revenueLabels),
+      revenueValues: JSON.stringify(revenueValues),
+      profitValues:  JSON.stringify(profitValues),
+
+      // Chart 2
+      thisMonthName,
+      lastMonthName,
+      thisMonthSales,
+      lastMonthSales,
+
+      // Chart 3
+      donutLabels: JSON.stringify(donutLabels),
+      donutValues: JSON.stringify(donutValues),
+
+      // Chart 4
+      lowStockNames:     JSON.stringify(lowStockNames),
+      lowStockQty:       JSON.stringify(lowStockQty),
+      lowStockThreshold: JSON.stringify(lowStockThreshold),
+      hasLowStock:       lowStockRaw.length > 0,
+
+      // Chart 5
+      topProductNames: JSON.stringify(topProductNames),
+      topProductQty:   JSON.stringify(topProductQty),
+    });
+
+  } catch (err) {
+    console.error("Analytics error:", err);
+    res.status(500).send("Server Error");
+  }
+});
+
+
+
+
+
+
+
+
+
+
 if (process.env.NODE_ENV !== 'production') {
   app.listen(3000);
 }
