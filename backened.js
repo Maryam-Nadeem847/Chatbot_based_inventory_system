@@ -241,7 +241,10 @@ Output: {"action":"purchase","productName":"Biscuit","quantity":20,"unit":"packe
 
 // ── Text → Speech (ElevenLabs) ─────────────────────────────────────────
 const textToSpeech = async (text) => {
-  const voiceId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM';
+  // Aria — a current ElevenLabs "default" voice that IS usable on the free
+  // API tier. (The old default 21m00Tcm4TlvDq8ikWAM / "Rachel" became a paid
+  // "library" voice and now returns 402 for free accounts.)
+  const voiceId = process.env.ELEVENLABS_VOICE_ID || '9BWtsMINqrJLrRacOk9x';
   const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
 
   const response = await fetch(url, {
